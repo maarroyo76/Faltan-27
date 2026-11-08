@@ -1,0 +1,2938 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Calcula cuántos stacks y cajas de shulker ocupa tu construcción de Minecraft, cuánto te falta juntar y qué craftear antes de empezar.">
+<meta name="theme-color" content="#18131f">
+<meta property="og:title" content="Faltan 27">
+<meta property="og:description" content="Cuenta los bloques antes de poner el primero. Calcula cuántos stacks y cajas de shulker ocupa tu construcción de Minecraft, cuánto te falta juntar y qué craftear antes de empezar.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='2.5,7.5 12,12.5 12,22 2.5,17' fill='%239a6aa8'/%3E%3Cpolygon points='12,12.5 21.5,7.5 21.5,17 12,22' fill='%236f4a7b'/%3E%3Cpolygon points='12,2.5 21.5,7.5 12,12.5 2.5,7.5' fill='%23c294d1'/%3E%3Cpath d='M2.5 11.6L12 16.6L21.5 11.6' stroke='%23000' stroke-opacity='.5' fill='none'/%3E%3Cpolygon points='6,15.4 8.4,16.6 8.4,18.6 6,17.4' fill='%23f2b84b'/%3E%3C/svg%3E">
+<style>
+/* Base que antes ponía el visor de artefactos */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font-size:14px}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Faltan 27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&family=Chivo:wght@400;500;600;700&family=Pixelify+Sans:wght@500;600;700&display=swap">
+<style>
+/* Layout: portada nocturna con ilustración isométrica; barra de listas; dos columnas (lista editable y resultado), una en móvil; pie con aviso */
+:root{
+  --bg:#ecebf1; --surface:#fbfafd; --ink:#1c1926; --muted:#5d5871; --line:#d3cee0;
+  --accent:#74469a; --accent-ink:#ffffff; --accent-soft:#ece3f4;
+  --torch:#c27d12; --torch-bright:#f2b84b; --torch-ink:#241a06;
+  --bevel-hi:rgba(255,255,255,.95); --bevel-lo:rgba(42,30,66,.16); --grid-dot:rgba(60,40,90,.07);
+  --night:#18131f; --night-2:#251d32; --night-ink:#f3edfb; --night-muted:#bfb3d3; --night-line:#3b3149; --night-accent:#d7b2f1;
+  --gui:#c6c6c6; --slot:#8b8b8b; --slot-hi:#f4f4f4; --slot-lo:#373737;
+  --shulker:#976997; --shulker-dark:#6c4a6c; --shulker-ink:#ffffff;
+  --bad:#b3261e; --warn-bg:#fbf1d3; --warn-ink:#5f4300;
+  --scrim:rgba(24,20,36,.5); --shadow:rgba(30,20,50,.22);
+  --m1:#3a78b8; --m2:#c4762a; --m3:#3f8f4c; --m4:#b8434f; --m5:#7d5fbf; --m6:#23908f; --m7:#a3861f; --m8:#5f6673;
+  --f-display:"Pixelify Sans", ui-monospace, "Courier New", monospace;
+  --f-body:"Chivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"Chivo Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13111a; --surface:#1c1926; --ink:#ebe7f3; --muted:#a6a0b9; --line:#332e45;
+    --accent:#c69be3; --accent-ink:#1a1224; --accent-soft:#2c2340;
+    --torch:#f2b84b; --torch-bright:#f2b84b; --torch-ink:#241a06;
+    --bevel-hi:rgba(255,255,255,.06); --bevel-lo:rgba(0,0,0,.5); --grid-dot:rgba(200,180,255,.05);
+    --night:#0f0c15; --night-2:#1d1728; --night-line:#30273f;
+    --gui:#2b2c31; --slot:#1c1d21; --slot-hi:#45464c; --slot-lo:#0b0b0d;
+    --shulker:#7f5a87; --shulker-dark:#4f3856; --shulker-ink:#ffffff;
+    --bad:#ff8f86; --warn-bg:#3a3014; --warn-ink:#f1d48a;
+    --scrim:rgba(0,0,0,.62); --shadow:rgba(0,0,0,.5);
+    --m1:#6aa6e6; --m2:#eb9a4c; --m3:#6cc07a; --m4:#e7707c; --m5:#a88ae8; --m6:#4cc4c2; --m7:#d6b54a; --m8:#9aa1ad;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13111a; --surface:#1c1926; --ink:#ebe7f3; --muted:#a6a0b9; --line:#332e45;
+  --accent:#c69be3; --accent-ink:#1a1224; --accent-soft:#2c2340;
+  --torch:#f2b84b; --torch-bright:#f2b84b; --torch-ink:#241a06;
+  --bevel-hi:rgba(255,255,255,.06); --bevel-lo:rgba(0,0,0,.5); --grid-dot:rgba(200,180,255,.05);
+  --night:#0f0c15; --night-2:#1d1728; --night-line:#30273f;
+  --gui:#2b2c31; --slot:#1c1d21; --slot-hi:#45464c; --slot-lo:#0b0b0d;
+  --shulker:#7f5a87; --shulker-dark:#4f3856; --shulker-ink:#ffffff;
+  --bad:#ff8f86; --warn-bg:#3a3014; --warn-ink:#f1d48a;
+  --scrim:rgba(0,0,0,.62); --shadow:rgba(0,0,0,.5);
+  --m1:#6aa6e6; --m2:#eb9a4c; --m3:#6cc07a; --m4:#e7707c; --m5:#a88ae8; --m6:#4cc4c2; --m7:#d6b54a; --m8:#9aa1ad;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:28px 56px}
+.top h1{font-family:var(--f-display);font-weight:600;font-size:clamp(1.9rem,4.2vw,2.7rem);line-height:1.05;margin:0;text-wrap:balance}
+.top p{margin:.55rem 0 0;color:var(--muted);max-width:64ch}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap}
+.top > div{min-width:0}
+.qc-open{display:inline-flex;align-items:center;gap:8px}
+.qc{position:fixed;right:max(16px, env(safe-area-inset-right, 0px));bottom:calc(16px + env(safe-area-inset-bottom, 0px));width:min(370px, calc(100vw - 32px));max-height:calc(100% - 32px);overflow:auto;z-index:25;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 14px 40px var(--shadow);padding:14px;display:flex;flex-direction:column;gap:10px}
+body.has-bar .qc{bottom:calc(84px + env(safe-area-inset-bottom, 0px))}
+.qc-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.qc-head h2{font-size:1.1rem}
+.qc #qcExpr{font-family:var(--f-mono);font-size:1.15rem;padding:.6rem .7rem}
+.qc-keys{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.qc-keys button{font:inherit;font-family:var(--f-mono);font-size:.9rem;padding:.4rem 0;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);cursor:pointer}
+.qc-keys button:hover{border-color:var(--accent);color:var(--accent)}
+.qc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qc-big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.qc-big .n{font-family:var(--f-display);font-size:2rem;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--accent);overflow-wrap:anywhere}
+.qc-big .u{color:var(--muted);font-size:.9rem}
+.qc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.qc-grid > div{background:var(--surface);padding:8px 10px;min-width:0}
+.qc-grid .lbl{display:flex;align-items:center;gap:5px}
+.qc-grid .lbl .ico{width:16px;height:16px}
+.qc-grid .v{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:.95rem;overflow-wrap:anywhere}
+.qc-grid .s{font-size:.75rem;color:var(--muted)}
+.qc-err{color:var(--bad);font-size:.85rem;margin:0}
+.qc-hist{display:flex;flex-wrap:wrap;gap:6px}
+.qc-hist button{font:inherit;font-family:var(--f-mono);font-size:.78rem;padding:2px 8px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--muted);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qc-hist button:hover{color:var(--accent);border-color:var(--accent)}
+.qc-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}
+@media (max-width:560px){
+  .qc{left:0;right:0;bottom:0;width:auto;max-height:78%;border-radius:12px 12px 0 0;border-bottom:0;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px))}
+  body.has-bar .qc{bottom:0;z-index:26}
+}
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;margin-top:24px;align-items:start}
+@media (max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.panel-head .title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.3rem;margin:0;line-height:1.2}
+h3{font-family:var(--f-display);font-weight:500;font-size:1.05rem;margin:0}
+.badge{font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;font-weight:600;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:999px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-size:.875rem;font-weight:500;padding:.45rem .8rem;border-radius:4px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;line-height:1.3}
+.btn:hover{border-color:var(--muted)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{border-color:var(--ink)}
+.btn.armed{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.45rem .55rem;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 2px var(--accent-soft)}
+input[aria-invalid="true"]{border-color:var(--bad)}
+.lbl{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* Lista de materiales */
+.rows-head,.row{display:grid;grid-template-columns:1.5rem 1.3rem minmax(0,1fr) 5.4rem 4.6rem 4.4rem 2rem 2rem;gap:6px;align-items:center}
+.rows-head{padding-bottom:2px}
+.rows{display:flex;flex-direction:column;gap:8px}
+.row{border-radius:4px}
+.row.dragging{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent);position:relative;z-index:2}
+.handle{width:1.6rem;height:2.25rem;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:4px;cursor:grab;touch-action:none;padding:0}
+.handle:hover{background:var(--bg)}
+.row.dragging .handle{cursor:grabbing;color:var(--accent)}
+.order-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.order-bar .tip{font-size:.8rem;color:var(--muted)}
+.swatch{width:12px;height:12px;border-radius:2px;display:inline-block;flex:none}
+.qty,.have{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+select.ss.is-auto{color:var(--muted)}
+.hint.ok{color:var(--accent);font-family:var(--f-body)}
+.fs{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:14px}
+.listbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:20px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.listbar select,.listbar .list-name{width:auto;min-width:12rem;max-width:100%;font-weight:600}
+.listbar .share-note{font-size:.82rem;color:var(--muted);flex:1 1 14rem}
+.listbar .share-note.bad{color:var(--bad)}
+.badge.shared{background:var(--accent);color:var(--accent-ink)}
+.gcheck{display:flex;align-items:flex-start;gap:8px;cursor:pointer}
+.gcheck input{width:1rem;height:1rem;margin-top:.2rem;accent-color:var(--accent);flex:none}
+tr.got td{color:var(--muted)}
+tr.got .gname{text-decoration:line-through}
+.prog{font-family:var(--f-body);font-size:.8rem;color:var(--muted);font-weight:400;margin-left:6px}
+.fuel{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.fuel p{margin:0;font-size:.88rem}
+.fuel input[type=number]{width:5rem}
+fieldset:disabled .rows{opacity:.75}
+.icon-btn{width:2.25rem;height:2.25rem;display:grid;place-items:center;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:4px;cursor:pointer}
+.icon-btn:hover{color:var(--ink);border-color:var(--line)}
+.icon-btn.del:hover{color:var(--bad)}
+.icon-btn.craft{opacity:.55}
+.icon-btn.craft.known{color:var(--accent);opacity:1}
+.icon-btn.craft:hover{color:var(--accent);opacity:1}
+.icon-btn:disabled{opacity:.25;cursor:default}
+/* Ventana de desglose */
+dialog.craft{width:min(840px, calc(100vw - 24px));max-width:none;max-height:min(90vh, 980px);padding:0;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);box-shadow:0 18px 50px var(--shadow);overflow:auto}
+dialog.craft::backdrop{background:var(--scrim)}
+.dlg-head{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 18px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.dlg-head h2{text-wrap:balance}
+.dlg-head h2 .x{color:var(--muted);font-family:var(--f-mono);font-size:1rem;font-weight:500;white-space:nowrap}
+.dlg-body{padding:16px 18px 22px;display:flex;flex-direction:column;gap:16px}
+.dlg-bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+.dlg-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:start}
+@media (max-width:720px){.dlg-cols{grid-template-columns:minmax(0,1fr)}}
+.dlg-cols section{display:flex;flex-direction:column;gap:8px;min-width:0}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:1.8rem minmax(0,1fr);column-gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.steps li::before{content:counter(s);grid-row:1 / span 4;font-family:var(--f-display);color:var(--accent);font-size:1rem;line-height:1.45}
+.step-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.step-top strong{font-weight:600;overflow-wrap:anywhere}
+.step-sub{font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+.step-sub.left{color:var(--warn-ink)}
+.check.sm{font-size:.82rem;padding:3px 0 0;color:var(--muted)}
+.mini-btn{font:inherit;font-size:.74rem;padding:1px 7px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--accent);cursor:pointer;margin-left:6px;white-space:nowrap}
+.kept{font-size:.72rem;color:var(--muted)}
+.editor{display:flex;flex-direction:column;gap:12px;max-width:560px}
+.editor p{margin:0}
+.ed-yield{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ed-yield input{width:5.5rem}
+.ed-rows{display:flex;flex-direction:column;gap:8px}
+.ed-row{display:grid;grid-template-columns:minmax(0,1fr) 5.5rem 2.25rem;gap:8px;align-items:center}
+.ed-row .q{font-family:var(--f-mono)}
+.fine{font-size:.8rem;color:var(--muted);margin:0}
+.done-check{width:1.15rem;height:1.15rem;margin:0;accent-color:var(--accent);cursor:pointer;justify-self:center}
+.row.is-done .name{text-decoration:line-through;color:var(--muted)}
+.row.is-done .qty,.row.is-done .have,.row.is-done .ss{opacity:.6}
+.row.is-done .ico-slot{opacity:.55}
+.done-sep{display:flex;align-items:center;gap:10px;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-top:6px}
+.done-sep::after{content:"";flex:1;height:1px;background:var(--line);order:1}
+.done-sep .mini-btn{order:2;text-transform:none;letter-spacing:0;font-weight:500}
+.res-tabs{align-self:flex-start;max-width:100%}
+.res-tabs label{padding:.5rem .9rem}
+.cv{display:flex;flex-direction:column;gap:14px}
+.cv-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.cv-bar select{width:auto}
+.cv h3{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.used{display:block;font-size:.76rem;color:var(--muted);margin-top:1px}
+.note.unknown{display:flex;flex-direction:column;gap:8px}
+.note.unknown .chip{background:var(--surface)}
+@container (max-width: 440px){
+  #listView table, #listView thead, #listView tbody, #listView tfoot, #listView tr, #listView td{display:block}
+  #listView thead{display:none}
+  #listView tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,.8fr) minmax(0,.7fr);gap:2px 10px;padding:9px 0;border-bottom:1px solid var(--line)}
+  #listView tfoot tr{border-bottom:0}
+  #listView td{border:0;padding:0;text-align:left}
+  #listView td.num{white-space:normal;overflow-wrap:anywhere}
+  #listView td:first-child{grid-column:1 / -1;margin-bottom:4px}
+  #listView td.num::before{content:attr(data-label);display:block;font-family:var(--f-body);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  #listView td.num br{display:none}
+  #listView td.num small{display:block;margin-left:0}
+  #listView .tbl-wrap{overflow:visible}
+}
+tr.row-done td{color:var(--muted)}
+tr.row-done .linkish{text-decoration-line:line-through;text-decoration-style:solid}
+.alldone{background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.alldone strong{font-size:1rem}
+.tag-unknown{font-size:.7rem;color:var(--warn-ink);background:var(--warn-bg);border-radius:3px;padding:0 5px}
+.cv td{vertical-align:top}
+.cv .gcheck{align-items:flex-start}
+.qty-field{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qty-field input{width:8.5rem;font-family:var(--f-mono)}
+.qty-field .err{font-size:.8rem;color:var(--bad)}
+.back-btn{font:inherit;font-size:.82rem;font-weight:500;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;margin-bottom:2px}
+.back-btn:hover{text-decoration:underline}
+.split{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;align-items:start}
+.split-card{border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0;background:var(--bg)}
+.split-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.split-head h3{display:flex;align-items:center;gap:7px;font-size:.98rem;min-width:0;overflow-wrap:anywhere}
+.split-head .x{color:var(--muted);font-family:var(--f-mono);font-size:.8rem;font-weight:400;white-space:nowrap}
+.split-card table{font-size:.84rem}
+.split-card td{padding:4px 4px}
+details.help summary{cursor:pointer;color:var(--accent);font-weight:500;font-size:.85rem;width:max-content;max-width:100%}
+details.help p{margin:.5rem 0 0}
+.linkish{font:inherit;background:none;border:0;padding:0;color:inherit;text-align:left;cursor:pointer;text-decoration:underline dotted var(--muted);text-underline-offset:3px;overflow-wrap:break-word}
+.linkish:hover{color:var(--accent);text-decoration-color:var(--accent)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom, 0px));z-index:30;display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--bg);padding:8px 8px 8px 14px;border-radius:6px;box-shadow:0 8px 24px var(--shadow);max-width:calc(100vw - 32px);min-width:min(300px, calc(100vw - 32px));justify-content:space-between;font-size:.9rem}
+.toast .btn{background:transparent;color:inherit;border-color:currentColor;padding:.3rem .7rem}
+body.has-bar .toast{bottom:calc(80px + env(safe-area-inset-bottom, 0px))}
+.mbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 18px var(--shadow);padding-block:10px calc(10px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));font-size:.9rem}
+.mbar b{font-family:var(--f-display);font-weight:500;font-size:1.15rem;font-variant-numeric:tabular-nums}
+body.has-bar .wrap{padding-bottom:96px}
+.hint{grid-column:2 / -1;font-size:.78rem;color:var(--muted);font-family:var(--f-mono);margin-top:-3px}
+.hint.bad{color:var(--bad);font-family:var(--f-body)}
+@media (max-width:560px){
+  .rows-head{display:none}
+  .row{grid-template-columns:1.6rem minmax(0,1fr) minmax(0,1fr) 2.25rem 2.25rem;row-gap:6px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .row .done-check{grid-column:1;grid-row:1}
+  .row .handle{grid-column:1;grid-row:2;height:100%}
+  .row .namewrap{grid-column:2 / 4;grid-row:1}
+  .row .craft{grid-column:4;grid-row:1}
+  .row .del{grid-column:5;grid-row:1}
+  .row .qty{grid-column:2;grid-row:2}
+  .row .have{grid-column:3;grid-row:2}
+  .row .ss{grid-column:4 / 6;grid-row:2}
+  .row .hint{grid-column:2 / 6;grid-row:3;margin-top:0}
+}
+.help{font-size:.82rem;color:var(--muted);margin:0;max-width:62ch}
+.help code{font-family:var(--f-mono);font-size:.8rem;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:0 4px;color:var(--ink)}
+.paste{border:1px dashed var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.paste textarea{min-height:150px;resize:vertical;font-family:var(--f-mono);font-size:.85rem;background:var(--surface)}
+.paste .opts{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.paste .opts select{width:auto;background:var(--surface)}
+.status{font-size:.85rem;color:var(--muted);margin:0}
+
+/* Resultado */
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:5px}
+.mult{display:flex;align-items:center;gap:6px}
+.mult span{font-family:var(--f-display);font-size:1.1rem;color:var(--muted)}
+.mult input{width:5.5rem;font-family:var(--f-mono)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--bg)}
+.seg input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.seg label{padding:.45rem .75rem;cursor:pointer;font-size:.85rem;font-weight:500}
+.seg label + input + label{border-left:1px solid var(--line)}
+.seg input:checked + label{background:var(--accent);color:var(--accent-ink)}
+.seg input:focus-visible + label{outline:2px solid var(--accent);outline-offset:-2px}
+.check{display:flex;align-items:center;gap:8px;font-size:.9rem;cursor:pointer;padding-bottom:.45rem}
+.check input{width:1rem;height:1rem;accent-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.stats.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stat{background:var(--surface);padding:12px 14px;min-width:0}
+.stat .n{font-family:var(--f-display);font-weight:500;font-size:clamp(1.35rem,2.6vw,1.85rem);line-height:1.15;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stat .sub{font-size:.8rem;color:var(--muted)}
+.stat.hl .n{color:var(--accent)}
+.panel.res{container-type:inline-size}
+@container (max-width: 540px){
+  .stats,.stats.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats.three .stat:first-child{grid-column:span 2}
+}
+@media (max-width:560px){
+  .stats,.stats.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats.three .stat:first-child{grid-column:span 2}
+}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{text-align:left;font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:6px 5px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 5px;border-bottom:1px solid var(--line);vertical-align:middle}
+.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mat{display:flex;align-items:center;gap:8px;min-width:6.5rem}
+.mat span:last-child{overflow-wrap:break-word}
+td small{color:var(--muted);font-size:.75rem}
+tfoot td{font-weight:600;border-bottom:none}
+.empty{color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:28px 16px;text-align:center}
+.note{font-size:.85rem;color:var(--warn-ink);background:var(--warn-bg);padding:8px 11px;border-radius:4px;margin:0}
+.sb-wrap{display:flex;flex-direction:column;gap:10px}
+.sb-wrap .head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sb{background:var(--shulker);border-radius:4px;padding:0 5px 6px;box-shadow:inset 0 -3px 0 var(--shulker-dark);min-width:0}
+.sb-head{display:flex;justify-content:space-between;gap:6px;color:var(--shulker-ink);font-family:var(--f-display);font-size:.8rem;padding:4px 2px 3px;min-width:0}
+.sb-head .sb-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--f-body);font-size:.75rem;opacity:.92}
+.sb-body{background:var(--gui);padding:3px;border-radius:2px;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:2px}
+.slot{aspect-ratio:1;max-width:100%;background:var(--slot);position:relative;box-shadow:inset 1px 1px 0 var(--slot-lo),inset -1px -1px 0 var(--slot-hi)}
+.slot i{position:absolute;left:2px;right:2px;bottom:2px;height:calc((100% - 4px) * var(--f,1))}
+.more{font-size:.85rem;color:var(--muted);margin:0}
+.copy-fallback textarea{min-height:140px;font-family:var(--f-mono);font-size:.82rem}
+@media (prefers-reduced-motion: no-preference){.btn,.icon-btn,.seg label{transition:background-color .12s,border-color .12s,color .12s}}
+.namewrap{position:relative;min-width:0}
+.namewrap .ico-slot{position:absolute;left:7px;top:50%;transform:translateY(-50%);width:22px;height:22px;pointer-events:none;display:grid;place-items:center}
+.namewrap input{padding-left:34px;padding-right:6px}
+.row .icon-btn{width:2rem}
+.row select.ss{padding-left:.4rem;padding-right:.2rem}
+.ico{width:20px;height:20px;flex:none;vertical-align:middle;overflow:visible}
+.namewrap .ico{width:22px;height:22px}
+.hint{display:flex;flex-wrap:wrap;align-items:center;gap:3px 14px;margin-top:-2px}
+.hint .bad{color:var(--bad);font-family:var(--f-body)}
+.hint .ok{color:var(--accent);font-family:var(--f-body);font-weight:600}
+.pwrap{display:inline-flex;align-items:center;gap:6px}
+.pbar{display:inline-block;width:5.5rem;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.progress{display:flex;flex-direction:column;gap:6px}
+.progress .ptop{display:flex;justify-content:space-between;gap:10px;font-size:.85rem;flex-wrap:wrap}
+.progress .pbar{width:100%;height:10px;border-radius:5px}
+.progress .pbar i{border-radius:5px}
+.stat .lbl{display:flex;align-items:center;gap:6px}
+.stat .lbl .ico{width:18px;height:18px}
+.mat .ico{width:20px;height:20px}
+.sname{display:flex;align-items:center;gap:7px}
+.gcheck .ico{margin-top:.05rem}
+.optbox{border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.optbox summary{padding:9px 12px;cursor:pointer;display:flex;gap:6px 12px;align-items:baseline;flex-wrap:wrap;list-style:none}
+.optbox summary::-webkit-details-marker{display:none}
+.optbox summary::before{content:"";width:0;height:0;border-left:5px solid var(--accent);border-top:4px solid transparent;border-bottom:4px solid transparent;align-self:center;transition:transform .15s}
+.optbox[open] summary::before{transform:rotate(90deg)}
+.optbox .opt-t{font-weight:600;font-size:.9rem}
+.optbox .optsum{color:var(--muted);font-size:.82rem}
+.optbox .controls{padding:4px 12px 12px}
+.starter{border:2px dashed var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.starter p{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:.88rem;display:inline-flex;align-items:center;gap:7px;padding:.4rem .75rem .4rem .5rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.drop{display:flex;gap:12px;align-items:center;width:100%;padding:12px 14px;border:2px dashed var(--line);border-radius:6px;background:var(--surface);color:var(--ink);cursor:pointer;text-align:left;font:inherit}
+.drop:hover{border-color:var(--accent)}
+.drop svg{flex:none;color:var(--accent)}
+.drop small{color:var(--muted)}
+.panel.dropping{outline:3px dashed var(--accent);outline-offset:4px}
+/* ===== Identidad ===== */
+body{background-color:var(--bg);background-image:radial-gradient(var(--grid-dot) 1px, transparent 1.3px);background-size:16px 16px}
+.panel,.listbar{border-radius:4px;box-shadow:inset 2px 2px 0 var(--bevel-hi),inset -2px -2px 0 var(--bevel-lo),0 1px 0 var(--bevel-lo)}
+.btn{border-radius:3px;box-shadow:inset 0 -2px 0 var(--bevel-lo)}
+.btn:active{transform:translateY(1px);box-shadow:none}
+.btn-primary{box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.2)}
+.pbar i{background:var(--torch-bright)}
+.panel > .fs > .panel-head h2,.panel-head h2{letter-spacing:.01em}
+h2{font-size:1.4rem}
+.hero{position:relative;isolation:isolate;overflow:hidden;border-radius:6px;border:1px solid var(--night-line);background:var(--night);color:var(--night-ink);padding:clamp(22px,4vw,40px) clamp(18px,4vw,44px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 32px;align-items:center;box-shadow:inset 0 -5px 0 rgba(0,0,0,.35),0 1px 0 var(--bevel-lo)}
+.hero .stars{position:absolute;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--f-display);font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--night-muted)}
+.brand svg{width:22px;height:22px}
+.hero h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2.4rem,6.2vw,4.2rem);line-height:.95;margin:.45rem 0 0;color:var(--night-ink);text-wrap:balance;text-shadow:0 4px 0 rgba(0,0,0,.45)}
+.hero h1 span{color:var(--night-accent)}
+.hero .slogan{margin:.7rem 0 0;font-size:clamp(1.05rem,2vw,1.3rem);font-weight:600;color:var(--torch-bright);letter-spacing:.005em}
+.hero .tagline{margin:.55rem 0 0;color:var(--night-muted);max-width:52ch;font-size:1.03rem;line-height:1.55}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.2rem}
+.hero .btn{background:var(--night-2);border-color:var(--night-line);color:var(--night-ink);box-shadow:inset 0 -2px 0 rgba(0,0,0,.45);padding:.55rem .95rem}
+.hero .btn:hover{border-color:var(--night-muted)}
+.hero .btn-torch{background:var(--torch-bright);border-color:var(--torch-bright);color:var(--torch-ink);font-weight:600}
+.hero .btn-torch:hover{border-color:#fff3d1}
+.hero :focus-visible{outline-color:var(--torch-bright)}
+.steps-strip{list-style:none;margin:1.4rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px 22px;color:var(--night-muted);font-size:.86rem}
+.steps-strip li{display:flex;align-items:center;gap:8px}
+.steps-strip b{font-family:var(--f-display);font-weight:600;display:grid;place-items:center;width:1.45rem;height:1.45rem;background:var(--torch-bright);color:var(--torch-ink);border-radius:2px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.25);font-size:.85rem}
+.hero-art{width:clamp(190px,23vw,270px);filter:drop-shadow(0 10px 0 rgba(0,0,0,.25))}
+.hero-art svg{display:block;width:100%;height:auto;overflow:visible}
+@media (max-width:680px){ .hero{grid-template-columns:minmax(0,1fr)} .hero-art{display:none} }
+.foot{margin-top:36px;padding-top:16px;border-top:2px solid var(--line);color:var(--muted);font-size:.82rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px 24px}
+.foot p{margin:0;max-width:72ch}
+.foot .brand{color:var(--muted)}
+.foot .foot-brand{text-transform:none;letter-spacing:.02em;font-size:.95rem;color:var(--ink)}
+@media (prefers-reduced-motion: no-preference){
+  .hero-art .float{animation:bob 4s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-3px)}}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <svg class="stars" id="heroStars" aria-hidden="true"></svg>
+    <div>
+      <div class="brand"><span id="brandMark"></span>Herramienta para constructores</div>
+      <h1>Faltan <span>27</span></h1>
+      <p class="slogan">Cuenta los bloques antes de poner el primero.</p>
+      <p class="tagline">Una caja de shulker tiene 27 espacios. Aquí sabes cuántas llena tu construcción, cuánto te falta juntar y todo lo que hay que craftear antes de empezar.</p>
+      <div class="hero-actions">
+        <button class="btn btn-torch" id="heroStart" type="button">Empezar mi lista</button>
+        <button class="btn qc-open" id="qcOpen" type="button" aria-expanded="false" aria-controls="qc"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="1.5" width="12" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="4" width="7" height="2.5" fill="currentColor"/><g fill="currentColor"><rect x="4.5" y="8.5" width="2" height="2"/><rect x="7" y="8.5" width="2" height="2"/><rect x="9.5" y="8.5" width="2" height="2"/><rect x="4.5" y="11" width="2" height="2"/><rect x="7" y="11" width="2" height="2"/><rect x="9.5" y="11" width="2" height="2"/></g></svg>Calculadora rápida</button>
+      </div>
+      <ol class="steps-strip">
+        <li><b>1</b>Escribe, pega o importa tu .litematic</li>
+        <li><b>2</b>Mira stacks, cajas y lo que falta</li>
+        <li><b>3</b>Desglosa hasta los materiales brutos</li>
+      </ol>
+    </div>
+    <div class="hero-art" id="heroArt" aria-hidden="true"></div>
+  </header>
+
+  <div class="listbar">
+    <label class="lbl" for="listSel">Lista</label>
+    <select id="listSel"></select>
+    <input id="listName" class="list-name" hidden maxlength="60" aria-label="Nombre de la lista" autocomplete="off">
+    <div class="toolbar">
+      <button class="btn" id="listNew" type="button">Nueva</button>
+      <button class="btn" id="listRename" type="button">Renombrar</button>
+      <button class="btn" id="listShare" type="button" hidden>Compartir</button>
+      <button class="btn" id="listDelete" type="button">Borrar</button>
+    </div>
+    <span class="share-note" id="shareNote" role="status"></span>
+  </div>
+
+  <main class="layout">
+    <section class="panel" aria-labelledby="h-mat">
+      <fieldset class="fs" id="matFs">
+      <div class="panel-head">
+        <div class="title"><h2 id="h-mat">Materiales</h2><span class="badge" id="exampleBadge" hidden>Lista de ejemplo</span></div>
+        <div class="toolbar">
+          <button class="btn btn-primary" id="addRow" type="button">+ Agregar material</button>
+          <button class="btn" id="togglePaste" type="button" aria-expanded="false" aria-controls="pastePanel">Pegar o importar</button>
+          <button class="btn" id="clearAll" type="button">Vaciar</button>
+        </div>
+      </div>
+
+      <div class="paste" id="pastePanel" hidden>
+        <label class="lbl" for="pasteText">Una línea por material</label>
+        <textarea id="pasteText" spellcheck="false" placeholder="Piedra lisa 3456&#10;Vidrio: 12st+20&#10;64x Faroles&#10;| Stone | 1234 | 1234 | 0 |"></textarea>
+        <div class="opts">
+          <label class="lbl" for="litCol">Tablas de Litematica</label>
+          <select id="litCol">
+            <option value="total">Usar columna Total</option>
+            <option value="missing">Usar columna Missing (faltante)</option>
+          </select>
+        </div>
+        <p class="fine">Con la columna Total, la columna Available se copia a "Tengo".</p>
+        <div class="toolbar">
+          <button class="btn btn-primary" id="pasteAppend" type="button">Agregar a la lista</button>
+          <button class="btn" id="pasteReplace" type="button">Reemplazar la lista</button>
+        </div>
+        <div class="opts">
+          <button class="drop" id="litImport" type="button"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m0 0l-4 4m4-4l4 4M4 15v4h16v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Importar archivo .litematic</strong><br><small>O arrástralo al panel de materiales. Se crea una lista nueva con los bloques del esquema.</small></span></button>
+          <input type="file" id="litFile" accept=".litematic" hidden>
+        </div>
+        <p class="status" id="pasteStatus" role="status"></p>
+      </div>
+
+      <div class="order-bar">
+        <span class="lbl" id="orderLbl">Orden</span>
+        <div class="seg" role="radiogroup" aria-labelledby="orderLbl">
+          <input type="radio" name="order" id="orderDesc" value="desc"><label for="orderDesc">Mayor a menor</label>
+          <input type="radio" name="order" id="orderManual" value="manual"><label for="orderManual">Manual</label>
+        </div>
+      </div>
+
+      <div class="rows-head" aria-hidden="true">
+        <span class="lbl" title="Marca lo que ya juntaste completo">Listo</span><span></span><span class="lbl">Material</span><span class="lbl">Cantidad</span><span class="lbl">Tengo</span><span class="lbl">Stack</span><span></span><span></span>
+      </div>
+      <div class="rows" id="rows"></div>
+      <div class="starter" id="starter" hidden>
+        <p><strong>Empieza escribiendo un material</strong> en la fila de arriba, o prueba con uno de estos:</p>
+        <div class="chips">
+          <button class="chip" type="button" data-n="Tolva" data-q="93">Tolva ×93</button>
+          <button class="chip" type="button" data-n="Ladrillos de piedra" data-q="5sb">Ladrillos de piedra 5sb</button>
+          <button class="chip" type="button" data-n="Pistón pegajoso" data-q="24">Pistón pegajoso ×24</button>
+          <button class="chip" type="button" data-n="Farol" data-q="2st">Farol 2st</button>
+          <button class="chip" type="button" data-n="Escaleras de roble" data-q="120">Escaleras de roble ×120</button>
+        </div>
+        <p class="fine">¿Tienes la construcción en Litematica? Arrastra el archivo .litematic a este panel.</p>
+      </div>
+
+      <details class="help"><summary>Cómo escribir cantidades y atajos</summary><p>La cantidad acepta números o atajos: <code>3st</code> son 3 stacks, <code>2sb</code> son 2 shulkers llenas, <code>1dc</code> es un cofre doble. Se pueden sumar y multiplicar, por ejemplo <code>2sb+5st+10</code> o <code>64*12</code>. El tamaño de stack se detecta solo (perlas, letreros y baldes a 16; herramientas y armaduras a 1) y puedes cambiarlo. El botón de cuadrícula de cada fila abre el desglose de crafteo con los materiales brutos. En "Tengo" anota lo que ya juntaste (acepta los mismos atajos) y el resultado muestra solo lo que falta.</p></details>
+      </fieldset>
+    </section>
+
+    <section class="panel res" aria-labelledby="h-res">
+      <div class="panel-head">
+        <h2 id="h-res">Resultado</h2>
+        <div class="toolbar">
+          <button class="btn" id="copyBtn" type="button">Copiar resumen</button>
+        </div>
+      </div>
+
+      <details class="optbox" id="optBox"><summary><span class="opt-t">Opciones</span><span class="optsum" id="optSum"></span></summary>
+      <div class="controls">
+        <div class="field">
+          <label class="lbl" for="mult">Copias de la construcción</label>
+          <div class="mult"><span aria-hidden="true">×</span><input id="mult" type="number" min="1" step="1" inputmode="numeric" value="1"></div>
+        </div>
+        <div class="field" id="modeField">
+          <span class="lbl" id="modeLbl">Llenado de shulkers</span>
+          <div class="seg" role="radiogroup" aria-labelledby="modeLbl">
+            <input type="radio" name="mode" id="modeMixed" value="mixed"><label for="modeMixed">Mezclado</label>
+            <input type="radio" name="mode" id="modeSep" value="separate"><label for="modeSep">Una por material</label>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="showSb"> Calcular shulkers</label>
+        <label class="check"><input type="checkbox" id="subtract"> Restar lo que tengo</label>
+      </div>
+      </details>
+
+      <div class="copy-fallback" id="copyFallback" hidden>
+        <label class="lbl" for="copyText">No se pudo copiar automáticamente. Selecciona y copia el texto:</label>
+        <textarea id="copyText" readonly></textarea>
+      </div>
+
+      <div id="results" style="display:flex;flex-direction:column;gap:12px">
+        <div class="alldone" id="allDone" hidden><strong>Todo listo</strong><span>Ya tienes todos los materiales de esta lista.</span></div>
+        <div class="stats" id="stats"></div>
+        <div class="progress" id="progress" hidden></div>
+        <div class="seg res-tabs" role="radiogroup" aria-label="Qué mostrar">
+          <input type="radio" name="resView" id="rvList" value="list"><label for="rvList">Tu lista</label>
+          <input type="radio" name="resView" id="rvCraft" value="craft"><label for="rvCraft">Materiales para craftear</label>
+        </div>
+      </div>
+      <div class="empty" id="empty" hidden>Agrega un material con su cantidad para ver el cálculo.</div>
+      <div id="craftView" class="cv" hidden>
+        <div class="cv-bar">
+          <label class="qty-field"><span class="lbl">Madera</span><select id="woodSel">
+            <option value="planks">Contar tablones</option><option value="log">Bajar a troncos</option><option value="bamboo">Bajar a bloques de bambú</option>
+          </select></label>
+          <button class="btn" type="button" id="cvSteps">Ver pasos de crafteo</button>
+        </div>
+        <div id="cvBody"></div>
+      </div>
+      <div id="listView" class="cv">
+      <div class="tbl-wrap" id="tblWrap">
+        <table>
+          <thead id="thead"></thead>
+          <tbody id="tbody"></tbody>
+          <tfoot id="tfoot"></tfoot>
+        </table>
+      </div>
+      <p class="note" id="sbNote" hidden></p>
+      <div class="sb-wrap" id="sbWrap">
+        <div class="head"><h3>Carga en shulkers</h3><span class="lbl" id="sbCaption"></span></div>
+        <div class="sb-grid" id="sbGrid"></div>
+        <p class="more" id="sbMore" hidden></p>
+      </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span class="brand foot-brand"><span id="footMark"></span>Ya casi. Faltan 27.</span>
+    <p>Faltan 27 es una herramienta hecha por jugadores. No es un producto oficial de Minecraft y no está asociada con Mojang ni con Microsoft. Tus listas se guardan en tu navegador; las que compartes quedan guardadas en esta página.</p>
+  </footer>
+</div>
+
+<section class="qc" id="qc" aria-labelledby="qcTitle" hidden>
+  <div class="qc-head"><h2 id="qcTitle">Calculadora rápida</h2><button class="icon-btn" type="button" id="qcClose" aria-label="Cerrar calculadora"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.8" fill="none"/></svg></button></div>
+  <input id="qcExpr" autocomplete="off" spellcheck="false" placeholder="ej. 3sb + 20 o 1500 / 4" aria-label="Cálculo" aria-describedby="qcErr">
+  <div class="qc-keys" aria-label="Atajos">
+    <button type="button" data-k="st" title="Stacks">st</button><button type="button" data-k="sb" title="Cajas de shulker">sb</button><button type="button" data-k="dc" title="Cofres dobles">dc</button>
+    <button type="button" data-k="+">+</button><button type="button" data-k="-">−</button><button type="button" data-k="*">×</button><button type="button" data-k="/">÷</button>
+  </div>
+  <div class="qc-row">
+    <span class="lbl" id="qcSsLbl">Stack de</span>
+    <div class="seg" role="radiogroup" aria-labelledby="qcSsLbl">
+      <input type="radio" name="qcSs" id="qcSs64" value="64"><label for="qcSs64">64</label>
+      <input type="radio" name="qcSs" id="qcSs16" value="16"><label for="qcSs16">16</label>
+      <input type="radio" name="qcSs" id="qcSs1" value="1"><label for="qcSs1">1</label>
+    </div>
+  </div>
+  <p class="qc-err" id="qcErr" role="status"></p>
+  <div id="qcOut"></div>
+  <div class="qc-hist" id="qcHist"></div>
+  <div class="qc-add">
+    <input id="qcName" list="itemNames" placeholder="Material (para agregarlo a la lista)" aria-label="Material para agregar a la lista" autocomplete="off">
+    <button class="btn" type="button" id="qcAdd">Agregar</button>
+  </div>
+</section>
+
+<dialog class="craft" id="craftDlg" aria-labelledby="dlgTitle"></dialog>
+<datalist id="itemNames"></datalist>
+<div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button class="btn" type="button" id="toastUndo">Deshacer</button></div>
+<div class="mbar" id="mbar" hidden><div id="mbarStats"></div><button class="btn btn-primary" type="button" id="mbarGo">Ver resultado</button></div>
+
+<script>
+(function(){
+  const KEY = 'mc-stack-calc-v1';
+  const VIZ_LIMIT = 36;
+  const EXAMPLE = [
+    ['Ladrillos de piedra','3456'],
+    ['Losas de ladrillo de piedra','1.230'],
+    ['Vidrio','12st+20'],
+    ['Troncos de abeto','2sb'],
+    ['Faroles','96'],
+    ['Letreros de abeto','40'],
+    ['Perlas de ender','30']
+  ];
+  const rid = () => 'r' + Math.random().toString(36).slice(2, 10);
+  const lid = () => 'l' + Math.random().toString(36).slice(2, 10);
+  let colorSeq = 0;
+  const mk = (name = '', qty = '', ss = 'auto', color, have = '', id) => ({
+    id: (typeof id === 'string' && /^[a-z0-9]{2,24}$/i.test(id)) ? id : rid(),
+    name, qty, have, ss,
+    color: (color >= 1 && color <= 8) ? color : (colorSeq++ % 8) + 1
+  });
+  const cleanSS = v => (v === 'auto' ? 'auto' : ([64, 16, 1].includes(+v) ? +v : 'auto'));
+  const cleanRows = rows => (Array.isArray(rows) ? rows : []).slice(0, 600)
+    .map(r => { if (!r || typeof r !== 'object') return null; const x = mk(String(r.name || '').slice(0, 120), String(r.qty || '').slice(0, 60), cleanSS(r.ss), +r.color, String(r.have || '').slice(0, 60), r.id); if (r.done === true) x.done = true; return x; })
+    .filter(Boolean);
+  const cleanGathered = g => { const o = {}; if (g && typeof g === 'object') for (const k of Object.keys(g).slice(0, 2000)) if (g[k] === true) o[k] = true; return o; };
+  const cleanMult = m => Math.min(100000, Math.max(1, parseInt(m, 10) || 1));
+
+  function cleanCustom(c){
+    const out = {};
+    if (!c || typeof c !== 'object') return out;
+    for (const [k, v] of Object.entries(c)) {
+      if (!v || !v.name || !(v.y >= 1) || !Array.isArray(v.in)) continue;
+      const ins = v.in.filter(x => Array.isArray(x) && x[0] && +x[1] >= 1).map(x => [String(x[0]), Math.floor(+x[1])]);
+      if (ins.length) out[k] = { name: String(v.name), y: Math.floor(+v.y), in: ins };
+    }
+    return out;
+  }
+  const newList = (name, rows) => ({ id: lid(), name, rows: rows && rows.length ? rows : [mk()], mult: 1, gathered: {} });
+
+  function load(){
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      const d = JSON.parse(raw);
+      if (!d || typeof d !== 'object') return null;
+      let lists;
+      if (Array.isArray(d.lists) && d.lists.length) {
+        lists = d.lists.filter(L => L && typeof L === 'object').map(L => ({
+          id: typeof L.id === 'string' && /^[a-z0-9]{2,24}$/i.test(L.id) ? L.id : lid(),
+          name: String(L.name || 'Lista').slice(0, 60), rows: cleanRows(L.rows),
+          mult: cleanMult(L.mult), gathered: cleanGathered(L.gathered)
+        }));
+      } else if (Array.isArray(d.rows)) {
+        lists = [{ id: lid(), name: d.example ? 'Ejemplo' : 'Mi lista', rows: cleanRows(d.rows), mult: cleanMult(d.mult), gathered: {} }];
+      }
+      if (!lists || !lists.length) return null;
+      return {
+        lists, activeId: typeof d.activeId === 'string' ? d.activeId : lists[0].id,
+        order: d.order === 'manual' ? 'manual' : 'desc',
+        mode: d.mode === 'separate' ? 'separate' : 'mixed',
+        showSb: d.showSb !== false,
+        litCol: d.litCol === 'missing' ? 'missing' : 'total',
+        example: !!d.example,
+        custom: cleanCustom(d.custom),
+        wood: ['planks', 'log', 'bamboo'].includes(d.wood) ? d.wood : (d.toLogs ? 'log' : 'planks'),
+        resView: d.resView === 'craft' ? 'craft' : 'list',
+        subtract: d.subtract !== false,
+        addFuel: !!d.addFuel,
+        furnaces: Math.min(64, Math.max(1, parseInt(d.furnaces, 10) || 1))
+      };
+    } catch (e) { return null; }
+  }
+  const state = load() || {
+    lists: [{ id: lid(), name: 'Ejemplo', rows: EXAMPLE.map(([n, q]) => mk(n, q)), mult: 1, gathered: {} }],
+    activeId: null, order: 'desc', mode: 'mixed', showSb: true, litCol: 'total', example: true,
+    custom: {}, wood: 'planks', resView: 'list', subtract: true, addFuel: false, furnaces: 1
+  };
+
+  // Listas compartidas: viven en la base de datos de la página y llegan después de cargar
+  const shared = new Map();
+  let wantShared = null;
+  const findList = id => state.lists.find(L => L.id === id) || shared.get(id) || null;
+  const activeList = () => findList(state.activeId);
+  (function initActive(){
+    let L = state.lists.find(x => x.id === state.activeId);
+    if (!L) { if (state.activeId) wantShared = state.activeId; L = state.lists[0]; state.activeId = L.id; }
+    if (!L.rows.length) L.rows.push(mk());
+    state.rows = L.rows; state.mult = L.mult; state.gathered = L.gathered;
+    colorSeq = state.rows.length;
+  })();
+  function syncActive(){
+    const L = activeList(); if (!L) return;
+    L.rows = state.rows; L.mult = state.mult; L.gathered = state.gathered;
+  }
+  const serRows = rows => rows.map(({ id, name, qty, have, ss, color, done }) => ({ id, name, qty, have, ss, color, ...(done ? { done: true } : {}) }));
+  const serList = L => ({ name: L.name, rows: serRows(L.rows), mult: L.mult, gathered: L.gathered });
+
+  function save(){
+    syncActive();
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        lists: state.lists.map(L => ({ id: L.id, ...serList(L) })),
+        activeId: state.activeId,
+        order: state.order, mode: state.mode, showSb: state.showSb, litCol: state.litCol, example: state.example,
+        custom: state.custom, wood: state.wood, resView: state.resView, subtract: state.subtract, addFuel: state.addFuel, furnaces: state.furnaces
+      }));
+    } catch (e) {}
+    const L = activeList();
+    if (L && L.shared) queueShare(L);
+  }
+
+  const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+
+  const SHULKER_BOX = /\b(shulker box(es)?|cajas? de shulker)\b/;
+  const ONE = /\b(swords?|espadas?|pickaxes?|picos?|axes?|hachas?|shovels?|palas?|hoes?|azadas?|azadones?|helmets?|cascos?|chestplates?|petos?|pecheras?|leggings?|grebas?|pantalones?|boots?|botas?|bows?|arcos?|crossbows?|ballestas?|tridents?|tridentes?|shields?|escudos?|potions?|pociones?|pocion|beds?|camas?|boats?|botes?|barcas?|minecarts?|vagonetas?|saddles?|sillas? de montar|totems?( of undying)?|elytras?|elitros?|enchanted books?|libros? encantados?|music discs?|discos?( de musica)?|cakes?|pasteles?|tartas?|stews?|soups?|sopas?|estofados?|fishing rods?|canas? de pescar|shears|tijeras|flint and steel|mecheros?|encendedor(es)?|(water|lava|milk|powder snow) buckets?|(cubos?|baldes?) de (agua|lava|leche|nieve polvo)|horse armou?r|armaduras? para caballos?|maces?|mazas?|brush(es)?|cepillos?|spyglass(es)?|catalejos?)\b/;
+  const SIXTEEN = /\b(ender pearls?|perlas? de(l)? ender|snowballs?|bolas? de nieve|eggs?|huevos?|signs?|hanging signs?|carteles?|letreros?|buckets?|cubos?|baldes?|banners?|estandartes?|armor stands?|soportes? para armaduras?|honey bottles?|botellas? de miel)\b/;
+
+  function detectSS(name){
+    const n = norm(name);
+    if (!n) return 64;
+    if (SHULKER_BOX.test(n) || ONE.test(n)) return 1;
+    if (SIXTEEN.test(n) && !/spawn|generacion|engendr/.test(n)) return 16;
+    return 64;
+  }
+  const isShulkerBox = name => SHULKER_BOX.test(norm(name));
+  const effSS = r => (r.ss === 'auto' ? detectSS(r.name) : r.ss);
+
+  // Cantidad: números, atajos st / sb / dc, sumas (+) y productos (* o x)
+  function parseQty(str, ss){
+    let s = norm(str).replace(/\s+/g, '');
+    if (!s) return { v: 0, plain: true };
+    s = s.replace(/(\d)[.,](?=\d{3}(?!\d))/g, '$1').replace(/,/g, '.').replace(/(\d)x(?=\d)/g, '$1*').replace(/×/g, '*');
+    let total = 0;
+    for (const term of s.split('+')) {
+      if (!term) return { v: NaN, plain: false };
+      let prod = 1;
+      for (const f of term.split('*')) {
+        const m = f.match(/^(\d+(?:\.\d+)?)(sb|shulkers?|dc|cd|st|stacks?|s)?$/);
+        if (!m) return { v: NaN, plain: false };
+        const u = m[2] || '';
+        const unit = /^(sb|shulker)/.test(u) ? 27 * ss : (u === 'dc' || u === 'cd') ? 54 * ss : u ? ss : 1;
+        prod *= parseFloat(m[1]) * unit;
+      }
+      total += prod;
+    }
+    if (!isFinite(total) || total > 1e12) return { v: NaN, plain: false };
+    return { v: Math.round(total), plain: /^\d+$/.test(s) };
+  }
+
+  const nf = new Intl.NumberFormat('es-CL');
+  const nf1 = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 });
+
+  const $ = id => document.getElementById(id);
+  const rowsEl = $('rows');
+
+  const X_ICON = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="square"/></svg>';
+  // ================= Íconos de materiales (dibujos propios, coloreados por material) =================
+  const MAT_COLORS = [
+    [/redstone/, '#c62a1d'],
+    [/roble oscuro|dark oak/, '#4f3722'], [/roble palido|pale oak/, '#ddd3cb'], [/abeto|\bpino\b|spruce/, '#72502f'],
+    [/abedul|birch/, '#d8c88c'], [/jungla|\bselva\b|jungle/, '#b4805a'], [/acacia/, '#bf6638'], [/mangle|mangrove/, '#7d3b34'],
+    [/cerezo|cherry/, '#e7b6b2'], [/bambu|bamboo/, '#cdbb52'], [/carmesi|crimson/, '#7e3653'], [/distorsionad|warped/, '#3b928a'],
+    [/hierro|\biron\b|barrotes|caldero|cauldron|yunque|anvil|vagoneta|minecart|\brieles?\b|\brail|\braile?s?\b|tolva|hopper|cadena|chain/, '#d2d2d2'],
+    [/\boro\b|gold/, '#f0c54a'], [/cobre|copper|pararrayos/, '#c56c42'], [/diamante|diamond/, '#5ddfd4'], [/esmeralda|emerald/, '#2fbf66'],
+    [/lapis/, '#2b50b8'], [/cuarzo|quartz/, '#ece6dc'], [/carbon|\bcoal\b|charcoal/, '#2d2d2f'], [/obsidiana|obsidian/, '#2c2140'],
+    [/marina|sea lantern|prismarin/, '#5ba99c'], [/piedra luminosa|glowstone|farol|lantern|linterna|antorcha|torch|lampara|lamp/, '#eabf5c'],
+    [/purpur/, '#a97ca9'], [/piedra del end|end stone/, '#e0dea2'], [/nether|netherrack/, '#702c2c'],
+    [/azul claro|celeste|light blue/, '#3aa9d8'], [/gris claro|light gr[ae]y/, '#9c9c96'], [/verde lima|\blima\b|\blime\b/, '#74ba1e'],
+    [/\b(blanc[oa]s?|white)\b/, '#eceeee'], [/\b(naranjas?|orange)\b/, '#e2721b'], [/magenta/, '#b241b2'], [/\b(amarill[oa]s?|yellow)\b/, '#f2c535'],
+    [/\b(rosas?|rosad[oa]s?|pink)\b/, '#eb8fae'], [/\b(gris(es)?|gr[ae]y)\b/, '#50555c'], [/\b(cian|cyan)\b/, '#178292'], [/\b(morad[oa]s?|purpura|purple)\b/, '#6d2ba3'],
+    [/\b(azul(es)?|blue)\b/, '#33409f'], [/\b(marron(es)?|cafe|brown)\b/, '#6c4628'], [/\b(verdes?|green)\b/, '#4f6c20'], [/\b(roj[oa]s?|red)\b/, '#a02c27'], [/\b(negr[oa]s?|black)\b/, '#202026'],
+    [/ladrillos? de piedra|stone bricks?/, '#808080'], [/ladrillo|brick/, '#9d5842'], [/terracot|arcilla cocida/, '#a3644b'], [/arcilla|clay/, '#a4a8b6'],
+    [/arenisca|sandstone/, '#dbce97'], [/arena|\bsand\b/, '#ded4a1'], [/grava|gravel/, '#878180'], [/pizarra|deepslate/, '#4c4c52'],
+    [/andesita|andesite/, '#8d8d8d'], [/diorita|diorite/, '#cacac8'], [/granito|granite/, '#9c6d5c'],
+    [/\broca\b|cobble|adoquin|piedra labrada|horno|furnace|soltador|dropper|dispensador|dispenser|observador|observer/, '#7c7c7c'],
+    [/piedra lisa|smooth stone/, '#a5a5a5'], [/piedra|stone|repetidor|repeater|comparador|comparator/, '#919191'], [/vidrio|cristal|glass/, '#c3e5f2'],
+    [/slime|limo/, '#7dc665'], [/hielo|\bice\b/, '#9fc5f6'], [/\blana\b|wool|alfombra|carpet|\bcama\b|\bbed\b/, '#eceeee'], [/hormigon|concrete|cemento|concreto/, '#d0d3d5'],
+    [/trigo|heno|\bhay\b|wheat/, '#cbab3e'], [/perla|pearl|ojo de ender/, '#2c7a6c'], [/\bhilo\b|cuerda|string/, '#e8e8e8'], [/cuero|leather|libro|book/, '#8e5a35'], [/papel|paper/, '#efeee6'],
+    [/madera|tablon|tabla|tronco|plank|\blog\b|\bwood\b|palo|stick|cofre|chest|barril|barrel|mesa|crafting|valla|fence|puerta|door|trampilla|trapdoor|letrero|cartel|sign|escalera|ladder|marco|frame|piston|palanca|lever|musical|note/, '#bb8d58']
+  ];
+  function shapeOf(n){
+    if (/\b(antorchas?|torch(es)?)\b/.test(n)) return 'torch';
+    if (/\b(farol(es)?|lanterns?|linternas?)\b/.test(n) && !/marin|sea/.test(n)) return 'lantern';
+    if (/\b(pepitas?|nuggets?)\b/.test(n)) return 'nugget';
+    if (/\b(lingotes?|ingots?)\b/.test(n) || /^(hierro|oro|cobre|iron|gold|copper)$/.test(n) || /\(objeto\)/.test(n)) return 'ingot';
+    if (/\b(polvo|dust|polvora|gunpowder|redstone|azucar|sugar)\b/.test(n) && !/bloque|block|antorcha|torch|lampara|lamp|repetidor|repeater|comparador|comparator/.test(n)) return 'dust';
+    if (/\b(diamantes?|esmeraldas?|lapislazuli|lapis|cuarzo|quartz|fragmentos?|shards?|cristales|crystals|perlas?|pearls?|ojos?|eyes?|estrella|star)\b/.test(n) && !/bloque|block|pilar|pillar|ladrillo|brick|liso|smooth/.test(n)) return 'gem';
+    if (/\b(palos?|sticks?|varas?|rods?)\b/.test(n) && !/pararrayos|lightning/.test(n)) return 'stick';
+    if (/\b(paneles?|panel|panes?|barrotes|bars)\b/.test(n)) return 'pane';
+    if (/\b(vidrios?|cristal(es)?|glass)\b/.test(n)) return 'glass';
+    if (/\b(losas?|slabs?|alfombras?|carpets?)\b/.test(n)) return 'slab';
+    if (/\b(tablones|tablon|tablas?|planks?)\b/.test(n)) return 'planks';
+    if (/\b(troncos?|tallos?|logs?|stems?)\b/.test(n)) return 'log';
+    if (/\b(hilo|cuerda|string|papel|paper|cuero|leather|libros?|books?|trigo|wheat|bolas?|balls?|slimeball|tintes?|dyes?|cana|cane|caparazon|shell)\b/.test(n) || /^(bambu|bamboo)$/.test(n)) return 'item';
+    return 'cube';
+  }
+  const ST = 'stroke="rgba(0,0,0,.35)" stroke-width=".7" stroke-linejoin="round"';
+  function cubeSVG(c, h, faceOpacity){
+    const d = 9.5 * (1 - h), fo = faceOpacity ? ` fill-opacity="${faceOpacity}"` : '';
+    const T = `12,${2.5 + d} 21.5,${7.5 + d} 12,${12.5 + d} 2.5,${7.5 + d}`;
+    const L = `2.5,${7.5 + d} 12,${12.5 + d} 12,22 2.5,17`;
+    const R = `12,${12.5 + d} 21.5,${7.5 + d} 21.5,17 12,22`;
+    return `<polygon points="${L}" fill="${c}"${fo} ${ST}/><polygon points="${R}" fill="${c}"${fo} ${ST}/><polygon points="${R}" fill="rgba(0,0,0,.22)"/><polygon points="${T}" fill="${c}"${fo} ${ST}/><polygon points="${T}" fill="rgba(255,255,255,.3)"/>`;
+  }
+  function ingotSVG(c){
+    return `<polygon points="5,10 10,13 10,16.5 5,13.5" fill="${c}" ${ST}/><polygon points="10,13 20,9.5 20,13 10,16.5" fill="${c}" ${ST}/><polygon points="10,13 20,9.5 20,13 10,16.5" fill="rgba(0,0,0,.22)"/><polygon points="5,10 15,6.5 20,9.5 10,13" fill="${c}" ${ST}/><polygon points="5,10 15,6.5 20,9.5 10,13" fill="rgba(255,255,255,.35)"/>`;
+  }
+  function shapeSVG(shape, c){
+    switch (shape) {
+      case 'slab': return cubeSVG(c, .5);
+      case 'planks': return cubeSVG(c, 1) + '<path d="M2.5 10.7L12 15.7M2.5 13.9L12 18.9M12 15.7L21.5 10.7M12 18.9L21.5 13.9" stroke="rgba(0,0,0,.3)" stroke-width=".7" fill="none"/>';
+      case 'log': return cubeSVG(c, 1) + '<polygon points="12,5 17,7.5 12,10 7,7.5" fill="rgba(0,0,0,.2)"/><path d="M5.5 9.1V18.6M8.8 10.8V20.3M15.2 10.8V20.3M18.5 9.1V18.6" stroke="rgba(0,0,0,.28)" stroke-width=".7"/>';
+      case 'glass': return cubeSVG(c, 1, .5) + '<path d="M4.6 10.5L7.4 12M4.6 13.3L6 14" stroke="rgba(255,255,255,.85)" stroke-width="1" stroke-linecap="round"/>';
+      case 'pane': return `<polygon points="10,3.5 14,5.5 14,21.5 10,19.5" fill="${c}" fill-opacity=".6" ${ST}/><polygon points="14,5.5 15.5,4.8 15.5,20.8 14,21.5" fill="${c}" ${ST}/><polygon points="14,5.5 15.5,4.8 15.5,20.8 14,21.5" fill="rgba(0,0,0,.25)"/>`;
+      case 'ingot': return ingotSVG(c);
+      case 'nugget': return `<g transform="translate(4.5 4) scale(.66)">${ingotSVG(c)}</g>`;
+      case 'dust': return `<ellipse cx="12" cy="17.5" rx="8" ry="2.8" fill="${c}" opacity=".5"/><circle cx="8.5" cy="15" r="2.6" fill="${c}" ${ST}/><circle cx="15.8" cy="15.3" r="2.4" fill="${c}" ${ST}/><circle cx="12.3" cy="12.6" r="3" fill="${c}" ${ST}/><circle cx="12" cy="16.6" r="2.5" fill="${c}" ${ST}/><circle cx="11.4" cy="11.6" r="1" fill="rgba(255,255,255,.5)"/>`;
+      case 'gem': return `<polygon points="12,3 20,10 12,21 4,10" fill="${c}" ${ST}/><polygon points="12,3 4,10 12,10" fill="rgba(255,255,255,.38)"/><polygon points="4,10 20,10 12,21" fill="rgba(0,0,0,.18)"/>`;
+      case 'stick': return `<line x1="7" y1="19" x2="17" y2="5" stroke="rgba(0,0,0,.4)" stroke-width="4.2" stroke-linecap="round"/><line x1="7" y1="19" x2="17" y2="5" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/>`;
+      case 'torch': return `<line x1="12" y1="21" x2="12" y2="10.5" stroke="rgba(0,0,0,.4)" stroke-width="4" stroke-linecap="round"/><line x1="12" y1="21" x2="12" y2="10.5" stroke="#8a6438" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="8" r="3.4" fill="${c}"/><circle cx="12" cy="8.4" r="1.5" fill="#fff3b8"/>`;
+      case 'lantern': return `<path d="M12 2.5v3.5" stroke="#5b5b63" stroke-width="1.3"/><rect x="7.8" y="6" width="8.4" height="2.4" rx=".6" fill="#4a4a52"/><rect x="8.4" y="8.4" width="7.2" height="10" rx="1" fill="#3a3a42"/><rect x="9.9" y="10" width="4.2" height="6.8" fill="${c}"/><rect x="7.8" y="18.4" width="8.4" height="2.3" rx=".6" fill="#4a4a52"/>`;
+      case 'item': return `<circle cx="12" cy="13" r="7.5" fill="${c}" ${ST}/><circle cx="9.4" cy="10.4" r="2.4" fill="rgba(255,255,255,.38)"/>`;
+      default: return cubeSVG(c, 1);
+    }
+  }
+  const iconCache = new Map();
+  function iconFor(name, colorIdx){
+    const n = norm(name || '');
+    const key = n + '|' + (colorIdx || 0);
+    if (iconCache.has(key)) return iconCache.get(key);
+    let body;
+    if (!n) body = '<polygon points="12,2.5 21.5,7.5 21.5,17 12,22 2.5,17 2.5,7.5" fill="none" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="2 2"/>';
+    else {
+      const mc = MAT_COLORS.find(([re]) => re.test(n));
+      body = shapeSVG(shapeOf(n), mc ? mc[1] : `var(--m${colorIdx || 8})`);
+    }
+    const svg = `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`;
+    if (iconCache.size < 2000) iconCache.set(key, svg);
+    return svg;
+  }
+  const STAT_ICONS = {
+    items: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${cubeSVG('var(--muted)', 1)}</svg>`,
+    stacks: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><g transform="translate(0 4)">${cubeSVG('var(--muted)', .32)}</g><g transform="translate(0 -1)">${cubeSVG('var(--muted)', .32)}</g><g transform="translate(0 -6)">${cubeSVG('var(--muted)', .32)}</g></svg>`,
+    slots: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" fill="var(--slot)"/><path d="M3 21V3h18" stroke="var(--slot-lo)" stroke-width="2" fill="none"/><path d="M3 21h18V3" stroke="var(--slot-hi)" stroke-width="2" fill="none"/></svg>',
+    sb: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${cubeSVG('var(--shulker)', 1)}<path d="M2.5 11.5L12 16.5L21.5 11.5" stroke="rgba(0,0,0,.45)" stroke-width="1" fill="none"/></svg>`
+  };
+
+  const GRID_ICON = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><g fill="currentColor"><rect x="1" y="1" width="4" height="4"/><rect x="6" y="1" width="4" height="4"/><rect x="11" y="1" width="4" height="4"/><rect x="1" y="6" width="4" height="4"/><rect x="6" y="6" width="4" height="4" opacity=".4"/><rect x="11" y="6" width="4" height="4"/><rect x="1" y="11" width="4" height="4"/><rect x="6" y="11" width="4" height="4"/><rect x="11" y="11" width="4" height="4"/></g></svg>';
+
+  // ================= Recetas =================
+  // Clave de comparación: sin acentos, en minúscula y con plurales simples reducidos,
+  // para que "Ladrillos de piedra" y "ladrillo de piedra" sean lo mismo.
+  const stem = w => w.length > 3 ? w.replace(/s$/, '').replace(/([nlrdjhxz])e$/, '$1') : w;
+  const keyOf = s => norm(s).replace(/[()\[\],.;:!¡¿?"']/g, ' ').split(/\s+/).filter(Boolean).map(stem).join(' ');
+  const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  const lowerFirst = s => /^[A-ZÁÉÍÓÚÑ]{2,}\b/.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1);
+
+  const ITEMS = new Map();
+  const INDEX = new Map();
+  function reg(id, name, aliases, y, inputs, m, sc){
+    const it = { id, name };
+    if (y) it.r = { y, in: inputs, m: m || 'craft', sc: sc || 0 };
+    ITEMS.set(id, it);
+    for (const a of [name, ...(aliases || [])]) { const k = keyOf(a); if (k && !INDEX.has(k)) INDEX.set(k, id); }
+    return id;
+  }
+
+  // [id, nombre, alias, rinde, ingredientes, método, rinde en cortapiedras]
+  // Los lingotes, minerales y materiales de mob se tratan como brutos.
+  const DATA = [
+    ['iron','Lingote de hierro',['hierro','iron ingot','iron']],
+    ['gold','Lingote de oro',['oro','gold ingot','gold']],
+    ['copper','Lingote de cobre',['cobre','copper ingot','copper']],
+    ['diamond','Diamante',['diamond']],
+    ['emerald','Esmeralda',['emerald']],
+    ['redstone','Redstone',['polvo de redstone','redstone dust']],
+    ['quartz','Cuarzo del Nether',['cuarzo','nether quartz','quartz']],
+    ['lapis','Lapislázuli',['lapis','lapis lazuli']],
+    ['coal','Carbón',['carbon vegetal','coal','charcoal']],
+    ['sand','Arena',['sand']],
+    ['gravel','Grava',['gravel']],
+    ['clay_ball','Bola de arcilla',['clay ball']],
+    ['clay','Bloque de arcilla',['arcilla','clay','clay block']],
+    ['cobble','Roca',['piedra labrada','adoquin','cobblestone','cobble','piedra rota']],
+    ['string','Hilo',['cuerda','string']],
+    ['leather','Cuero',['leather']],
+    ['gunpowder','Pólvora',['gunpowder']],
+    ['sugarcane','Caña de azúcar',['sugar cane']],
+    ['slimeball','Bola de slime',['slimeball','slime ball','bola de limo']],
+    ['obsidian','Obsidiana',['obsidian']],
+    ['pearl','Perla de ender',['ender pearl','perla del ender']],
+    ['blaze_rod','Vara de blaze',['blaze rod']],
+    ['glow_dust','Polvo de piedra luminosa',['glowstone dust','polvo luminoso']],
+    ['shard','Fragmento de prismarina',['prismarine shard']],
+    ['crystals','Cristales de prismarina',['prismarine crystals']],
+    ['ink','Saco de tinta',['ink sac']],
+    ['netherrack','Netherrack',['bloque de nether']],
+    ['wheat','Trigo',['wheat']],
+    ['nether_star','Estrella del Nether',['nether star']],
+    ['shulker_shell','Caparazón de shulker',['shulker shell']],
+    ['bamboo','Bambú',['bamboo','cana de bambu']],
+    ['andesite','Andesita',['andesite']],
+    ['diorite','Diorita',['diorite']],
+    ['granite','Granito',['granite']],
+    ['cobbled_deepslate','Pizarra profunda labrada',['pizarra abisal labrada','cobbled deepslate']],
+    ['end_stone','Piedra del End',['end stone']],
+    ['chorus_popped','Fruta coral reventada',['fruta de coro reventada','popped chorus fruit']],
+    ['log','Troncos (cualquier madera)',['troncos','tronco','logs','log','wood logs']],
+    ['planks','Tablones (cualquier madera)',['tablones','tablon','tablas','tabla','madera','planks','wooden planks'],4,[['log',1]]],
+    ['stick','Palo',['palos','stick','sticks'],4,[['planks',2]]],
+    ['wslab','Losa de madera',['losas de madera','wooden slab'],6,[['planks',3]]],
+    ['iron_nugget','Pepita de hierro',['pepitas de hierro','iron nugget'],9,[['iron',1]]],
+    ['gold_nugget','Pepita de oro',['gold nugget'],9,[['gold',1]]],
+    ['stone','Piedra',['stone'],1,[['cobble',1]],'smelt'],
+    ['smooth_stone','Piedra lisa',['smooth stone'],1,[['stone',1]],'smelt'],
+    ['ss_slab','Losa de piedra lisa',['smooth stone slab'],6,[['smooth_stone',3]],'craft',2],
+    ['stone_bricks','Ladrillos de piedra',['stone bricks','stone brick'],4,[['stone',4]],'craft',1],
+    ['stone_pp','Placa de presión de piedra',['stone pressure plate'],1,[['stone',2]]],
+    ['stone_button','Botón de piedra',['stone button'],1,[['stone',1]]],
+    ['chest','Cofre',['baul','chest'],1,[['planks',8]]],
+    ['tripwire','Gancho de cuerda',['gancho de cable trampa','tripwire hook','gancho'],2,[['iron',1],['stick',1],['planks',1]]],
+    ['trapped_chest','Cofre trampa',['cofre con trampa','trapped chest'],1,[['chest',1],['tripwire',1]]],
+    ['barrel','Barril',['barrel'],1,[['planks',6],['wslab',2]]],
+    ['crafting_table','Mesa de trabajo',['mesa de crafteo','crafting table'],1,[['planks',4]]],
+    ['hopper','Tolva',['hopper','embudo'],1,[['iron',5],['chest',1]]],
+    ['furnace','Horno',['furnace'],1,[['cobble',8]]],
+    ['blast','Alto horno',['blast furnace'],1,[['iron',5],['furnace',1],['smooth_stone',3]]],
+    ['smoker','Ahumador',['smoker'],1,[['log',4],['furnace',1]]],
+    ['torch','Antorcha',['torch'],4,[['coal',1],['stick',1]]],
+    ['lantern','Farol',['linterna','lantern'],1,[['iron_nugget',8],['torch',1]]],
+    ['chain','Cadena',['cadena de hierro','chain','iron chain'],1,[['iron_nugget',2],['iron',1]]],
+    ['rail','Raíl',['rieles','riel','rail','rails','via','vias'],16,[['iron',6],['stick',1]]],
+    ['powered_rail','Raíl propulsor',['riel propulsor','powered rail'],6,[['gold',6],['stick',1],['redstone',1]]],
+    ['detector_rail','Raíl detector',['riel detector','detector rail'],6,[['iron',6],['stone_pp',1],['redstone',1]]],
+    ['redstone_torch','Antorcha de redstone',['redstone torch'],1,[['redstone',1],['stick',1]]],
+    ['activator_rail','Raíl activador',['riel activador','activator rail'],6,[['iron',6],['stick',2],['redstone_torch',1]]],
+    ['minecart','Vagoneta',['minecart'],1,[['iron',5]]],
+    ['hopper_minecart','Vagoneta con tolva',['hopper minecart','minecart with hopper'],1,[['hopper',1],['minecart',1]]],
+    ['chest_minecart','Vagoneta con cofre',['chest minecart','minecart with chest'],1,[['chest',1],['minecart',1]]],
+    ['piston','Pistón',['piston'],1,[['planks',3],['cobble',4],['iron',1],['redstone',1]]],
+    ['sticky_piston','Pistón pegajoso',['sticky piston'],1,[['piston',1],['slimeball',1]]],
+    ['observer','Observador',['observer'],1,[['cobble',6],['redstone',2],['quartz',1]]],
+    ['repeater','Repetidor',['repetidor de redstone','redstone repeater','repeater'],1,[['stone',3],['redstone_torch',2],['redstone',1]]],
+    ['comparator','Comparador',['comparador de redstone','redstone comparator','comparator'],1,[['stone',3],['redstone_torch',3],['quartz',1]]],
+    ['dropper','Soltador',['dropper'],1,[['cobble',7],['redstone',1]]],
+    ['bow','Arco',['bow'],1,[['stick',3],['string',3]]],
+    ['dispenser','Dispensador',['dispenser'],1,[['cobble',7],['redstone',1],['bow',1]]],
+    ['lever','Palanca',['lever'],1,[['stick',1],['cobble',1]]],
+    ['glowstone','Piedra luminosa',['glowstone'],1,[['glow_dust',4]]],
+    ['lamp','Lámpara de redstone',['redstone lamp'],1,[['redstone',4],['glowstone',1]]],
+    ['hay','Fardo de heno',['bala de heno','hay bale'],1,[['wheat',9]]],
+    ['target','Diana',['target'],1,[['redstone',4],['hay',1]]],
+    ['glass','Vidrio',['cristal','glass'],1,[['sand',1]],'smelt'],
+    ['glass_pane','Panel de vidrio',['panel de cristal','glass pane'],16,[['glass',6]]],
+    ['daylight','Sensor de luz solar',['detector de luz solar','daylight detector'],1,[['glass',3],['quartz',3],['wslab',3]]],
+    ['note_block','Bloque musical',['bloque de notas','note block'],1,[['planks',8],['redstone',1]]],
+    ['redstone_block','Bloque de redstone',['redstone block','block of redstone'],1,[['redstone',9]]],
+    ['iron_block','Bloque de hierro',['iron block','block of iron'],1,[['iron',9]]],
+    ['gold_block','Bloque de oro',['gold block','block of gold'],1,[['gold',9]]],
+    ['diamond_block','Bloque de diamante',['diamond block','block of diamond'],1,[['diamond',9]]],
+    ['emerald_block','Bloque de esmeralda',['emerald block','block of emerald'],1,[['emerald',9]]],
+    ['coal_block','Bloque de carbón',['coal block','block of coal'],1,[['coal',9]]],
+    ['lapis_block','Bloque de lapislázuli',['lapis block','block of lapis lazuli'],1,[['lapis',9]]],
+    ['copper_block','Bloque de cobre',['copper block','block of copper'],1,[['copper',9]]],
+    ['cut_copper','Cobre cortado',['cut copper'],4,[['copper_block',4]],'craft',4],
+    ['copper_bulb','Lámpara de cobre',['bombilla de cobre','copper bulb'],4,[['copper_block',3],['blaze_rod',1],['redstone',1]]],
+    ['lightning_rod','Pararrayos',['lightning rod'],1,[['copper',3]]],
+    ['iron_bars','Barrotes de hierro',['barras de hierro','iron bars'],16,[['iron',6]]],
+    ['iron_door','Puerta de hierro',['iron door'],3,[['iron',6]]],
+    ['iron_trapdoor','Trampilla de hierro',['iron trapdoor'],1,[['iron',4]]],
+    ['brick','Ladrillo (objeto)',['ladrillo de arcilla','brick item'],1,[['clay_ball',1]],'smelt'],
+    ['bricks','Ladrillos',['bloque de ladrillos','bricks','brick'],1,[['brick',4]]],
+    ['terracotta','Terracota',['arcilla cocida','terracotta'],1,[['clay',1]],'smelt'],
+    ['quartz_block','Bloque de cuarzo',['quartz block','block of quartz'],1,[['quartz',4]]],
+    ['quartz_pillar','Pilar de cuarzo',['quartz pillar'],2,[['quartz_block',2]],'craft',1],
+    ['quartz_bricks','Ladrillos de cuarzo',['quartz bricks'],4,[['quartz_block',4]],'craft',1],
+    ['smooth_quartz','Cuarzo liso',['bloque de cuarzo liso','smooth quartz'],1,[['quartz_block',1]],'smelt'],
+    ['sandstone','Arenisca',['sandstone'],1,[['sand',4]]],
+    ['smooth_sandstone','Arenisca lisa',['smooth sandstone'],1,[['sandstone',1]],'smelt'],
+    ['cut_sandstone','Arenisca cortada',['cut sandstone'],4,[['sandstone',4]],'craft',1],
+    ['nb_item','Ladrillo del Nether (objeto)',['nether brick item'],1,[['netherrack',1]],'smelt'],
+    ['nether_bricks','Ladrillos del Nether',['ladrillo del nether','nether bricks','nether brick'],1,[['nb_item',4]]],
+    ['prismarine','Prismarina',['prismarine'],1,[['shard',4]]],
+    ['prismarine_bricks','Ladrillos de prismarina',['prismarine bricks'],1,[['shard',9]]],
+    ['dark_prismarine','Prismarina oscura',['dark prismarine'],1,[['shard',8],['ink',1]]],
+    ['sea_lantern','Linterna marina',['farol marino','sea lantern'],1,[['shard',4],['crystals',5]]],
+    ['polished_andesite','Andesita pulida',['polished andesite'],4,[['andesite',4]],'craft',1],
+    ['polished_diorite','Diorita pulida',['polished diorite'],4,[['diorite',4]],'craft',1],
+    ['polished_granite','Granito pulido',['polished granite'],4,[['granite',4]],'craft',1],
+    ['polished_deepslate','Pizarra profunda pulida',['pizarra abisal pulida','polished deepslate'],4,[['cobbled_deepslate',4]],'craft',1],
+    ['deepslate_bricks','Ladrillos de pizarra profunda',['ladrillos de pizarra abisal','deepslate bricks'],4,[['polished_deepslate',4]],'craft',1],
+    ['deepslate_tiles','Baldosas de pizarra profunda',['baldosas de pizarra abisal','azulejos de pizarra abisal','deepslate tiles'],4,[['deepslate_bricks',4]],'craft',1],
+    ['end_stone_bricks','Ladrillos de piedra del End',['end stone bricks'],4,[['end_stone',4]],'craft',1],
+    ['purpur','Bloque de púrpur',['purpur','purpur block'],4,[['chorus_popped',4]]],
+    ['paper','Papel',['paper'],3,[['sugarcane',3]]],
+    ['book','Libro',['book'],1,[['paper',3],['leather',1]]],
+    ['bookshelf','Librería',['estanteria','estanteria de libros','bookshelf'],1,[['planks',6],['book',3]]],
+    ['ladder','Escalera de mano',['ladder'],3,[['stick',7]]],
+    ['scaffolding','Andamio',['scaffolding'],6,[['bamboo',6],['string',1]]],
+    ['wool','Lana',['lana blanca','white wool','wool'],1,[['string',4]]],
+    ['carpet','Alfombra',['alfombra blanca','white carpet','carpet'],3,[['wool',2]]],
+    ['bed','Cama',['bed'],1,[['wool',3],['planks',3]]],
+    ['item_frame','Marco',['marco de objetos','item frame'],1,[['stick',8],['leather',1]]],
+    ['anvil','Yunque',['anvil'],1,[['iron_block',3],['iron',4]]],
+    ['cauldron','Caldero',['cauldron'],1,[['iron',7]]],
+    ['shulker_box','Caja de shulker',['shulker box'],1,[['shulker_shell',2],['chest',1]]],
+    ['blaze_powder','Polvo de blaze',['blaze powder'],2,[['blaze_rod',1]]],
+    ['ender_eye','Ojo de ender',['ojo del ender','eye of ender'],1,[['pearl',1],['blaze_powder',1]]],
+    ['ender_chest','Cofre de ender',['cofre del ender','ender chest'],1,[['obsidian',8],['ender_eye',1]]],
+    ['beacon','Faro',['baliza','beacon'],1,[['glass',5],['obsidian',3],['nether_star',1]]],
+    ['composter','Compostador',['composter'],1,[['wslab',7]]],
+    ['slime_block','Bloque de slime',['slime block'],1,[['slimeball',9]]],
+    ['tnt','Dinamita',['tnt'],1,[['gunpowder',5],['sand',4]]],
+    ['campfire','Fogata',['hoguera','campfire'],1,[['stick',3],['coal',1],['log',3]]],
+    ['armor_stand','Soporte para armadura',['armor stand'],1,[['stick',6],['ss_slab',1]]],
+    ['crafter','Crafteador',['fabricador','crafter'],1,[['iron',5],['redstone',2],['crafting_table',1],['dropper',1]]],
+    // ---- Materiales base adicionales ----
+    ['vine','Enredaderas',['enredadera','vines','vine','lianas']],
+    ['moss','Bloque de musgo',['musgo','moss block','moss']],
+    ['blackstone','Piedra negra',['blackstone']],
+    ['basalt','Basalto',['basalt']],
+    ['tuff','Toba',['tuff']],
+    ['mud','Barro',['mud']],
+    ['red_sand','Arena roja',['red sand']],
+    ['nether_wart','Verruga del Nether',['nether wart']],
+    ['snowball','Bola de nieve',['bolas de nieve','snowball']],
+    ['ice','Hielo',['ice']],
+    ['bone','Hueso',['huesos','bone']],
+    ['kelp','Alga',['algas','kelp']],
+    ['honeycomb','Panal',['panales','honeycomb']],
+    ['honey_bottle','Botella de miel',['honey bottle']],
+    ['magma_cream','Crema de magma',['magma cream']],
+    ['pumpkin','Calabaza',['pumpkin']],
+    ['carved_pumpkin','Calabaza tallada',['carved pumpkin']],
+    ['soul_soil','Tierra de almas',['arena de almas','soul soil','soul sand']],
+    ['flint','Pedernal',['flint']],
+    ['feather','Pluma',['plumas','feather']],
+    ['amethyst_shard','Fragmento de amatista',['fragmentos de amatista','amethyst shard']],
+    ['glow_ink','Saco de tinta luminosa',['glow ink sac']],
+    ['dirt','Tierra',['dirt']],
+    ['egg','Huevo',['egg']],
+    ['sugar','Azúcar',['sugar']],
+    ['apple','Manzana',['apple']],
+    ['milk','Cubo de leche',['balde de leche','milk bucket']],
+    ['netherite','Lingote de netherita',['netherita','netherite ingot','netherite']],
+    ['sculk_sensor','Sensor de sculk',['sculk sensor']],
+    ['echo_shard','Fragmento de eco',['echo shard']],
+    ['breeze_rod','Vara de breeze',['breeze rod']],
+    ['heavy_core','Núcleo denso',['heavy core']],
+    // ---- Construcción ----
+    ['mossy_cobble','Roca musgosa',['piedra labrada musgosa','mossy cobblestone'],1,[['cobble',1],['vine',1]]],
+    ['mossy_stone_bricks','Ladrillos de piedra musgosos',['mossy stone bricks'],1,[['stone_bricks',1],['vine',1]]],
+    ['cracked_stone_bricks','Ladrillos de piedra agrietados',['cracked stone bricks'],1,[['stone_bricks',1]],'smelt'],
+    ['chiseled_stone_bricks','Ladrillos de piedra cincelados',['chiseled stone bricks'],1,[['stone_bricks',1]],'craft',1],
+    ['polished_blackstone','Piedra negra pulida',['polished blackstone'],4,[['blackstone',4]],'craft',1],
+    ['polished_blackstone_bricks','Ladrillos de piedra negra pulida',['polished blackstone bricks'],4,[['polished_blackstone',4]],'craft',1],
+    ['smooth_basalt','Basalto liso',['smooth basalt'],1,[['basalt',1]],'smelt'],
+    ['polished_basalt','Basalto pulido',['polished basalt'],4,[['basalt',4]],'craft',1],
+    ['polished_tuff','Toba pulida',['polished tuff'],4,[['tuff',4]],'craft',1],
+    ['tuff_bricks','Ladrillos de toba',['tuff bricks'],4,[['polished_tuff',4]],'craft',1],
+    ['packed_mud','Barro compacto',['packed mud'],1,[['mud',1],['wheat',1]]],
+    ['mud_bricks','Ladrillos de barro',['mud bricks'],4,[['packed_mud',4]],'craft',1],
+    ['red_sandstone','Arenisca roja',['red sandstone'],1,[['red_sand',4]]],
+    ['red_nether_bricks','Ladrillos rojos del Nether',['red nether bricks'],1,[['nether_wart',2],['nb_item',2]]],
+    ['chiseled_quartz','Bloque de cuarzo cincelado',['cuarzo cincelado','chiseled quartz block'],1,[['quartz_block',1]],'craft',1],
+    ['snow_block','Bloque de nieve',['nieve','snow block'],1,[['snowball',4]]],
+    ['packed_ice','Hielo compacto',['packed ice'],1,[['ice',9]]],
+    ['blue_ice','Hielo azul',['blue ice'],1,[['packed_ice',9]]],
+    ['bone_meal','Polvo de hueso',['bone meal'],3,[['bone',1]]],
+    ['bone_block','Bloque de hueso',['bone block'],1,[['bone_meal',9]]],
+    ['dried_kelp','Alga seca',['dried kelp'],1,[['kelp',1]],'smelt'],
+    ['dried_kelp_block','Bloque de algas secas',['dried kelp block'],1,[['dried_kelp',9]]],
+    ['honeycomb_block','Bloque de panal',['honeycomb block'],1,[['honeycomb',4]]],
+    ['honey_block','Bloque de miel',['honey block'],1,[['honey_bottle',4]]],
+    ['magma_block','Bloque de magma',['magma block'],1,[['magma_cream',4]]],
+    ['amethyst_block','Bloque de amatista',['amethyst block'],1,[['amethyst_shard',4]]],
+    ['tinted_glass','Vidrio tintado',['tinted glass'],2,[['glass',1],['amethyst_shard',4]]],
+    ['chiseled_copper','Cobre cincelado',['chiseled copper'],4,[['copper_block',4]],'craft',4],
+    ['copper_grate','Rejilla de cobre',['copper grate'],4,[['copper_block',4]],'craft',4],
+    ['copper_door','Puerta de cobre',['copper door'],3,[['copper',6]]],
+    ['copper_trapdoor','Trampilla de cobre',['copper trapdoor'],1,[['copper',4]]],
+    ['raw_iron_block','Bloque de hierro en bruto',['block of raw iron'],1,[['raw_iron',9]]],
+    ['raw_iron','Hierro en bruto',['raw iron']],
+    ['jack_o_lantern','Calabaza de Halloween',['linterna de calabaza','jack o lantern'],1,[['carved_pumpkin',1],['torch',1]]],
+    ['soul_torch','Antorcha de almas',['soul torch'],4,[['coal',1],['stick',1],['soul_soil',1]]],
+    ['soul_lantern','Farol de almas',['soul lantern'],1,[['iron_nugget',8],['soul_torch',1]]],
+    ['soul_campfire','Fogata de almas',['soul campfire'],1,[['stick',3],['soul_soil',1],['log',3]]],
+    ['end_rod','Vara del End',['end rod'],4,[['blaze_rod',1],['chorus_popped',1]]],
+    ['candle','Vela',['candle'],1,[['string',1],['honeycomb',1]]],
+    ['banner','Estandarte',['estandarte blanco','white banner','banner'],1,[['wool',6],['stick',1]]],
+    ['painting','Cuadro',['pintura','painting'],1,[['stick',8],['wool',1]]],
+    ['glow_item_frame','Marco luminoso',['glow item frame'],1,[['item_frame',1],['glow_ink',1]]],
+    ['flower_pot','Maceta',['flower pot'],1,[['brick',3]]],
+    ['chiseled_bookshelf','Librería cincelada',['estanteria cincelada','chiseled bookshelf'],1,[['planks',6],['wslab',3]]],
+    ['lectern','Atril',['lectern'],1,[['wslab',4],['bookshelf',1]]],
+    ['loom','Telar',['loom'],1,[['string',2],['planks',2]]],
+    ['cartography','Mesa de cartografía',['cartography table'],1,[['paper',2],['planks',4]]],
+    ['fletching','Mesa de flechería',['mesa de flechas','fletching table'],1,[['flint',2],['planks',4]]],
+    ['smithing','Mesa de herrería',['smithing table'],1,[['iron',2],['planks',4]]],
+    ['stone_slab_plain','Losa de piedra',['losas de piedra','stone slab'],6,[['stone',3]],'craft',2],
+    ['grindstone','Afilador',['piedra de afilar','grindstone'],1,[['stick',2],['stone_slab_plain',1],['planks',2]]],
+    ['stonecutter','Cortapiedras',['stonecutter'],1,[['iron',1],['stone',3]]],
+    ['enchanting','Mesa de encantamientos',['enchanting table'],1,[['book',1],['diamond',2],['obsidian',4]]],
+    ['brewing','Soporte para pociones',['alambique','brewing stand'],1,[['blaze_rod',1],['cobble',3]]],
+    ['jukebox','Tocadiscos',['jukebox'],1,[['planks',8],['diamond',1]]],
+    ['beehive','Colmena',['beehive'],1,[['planks',6],['honeycomb',3]]],
+    ['respawn_anchor','Nexo de reaparición',['respawn anchor'],1,[['crying_obsidian',6],['glowstone',3]]],
+    ['crying_obsidian','Obsidiana llorosa',['crying obsidian']],
+    ['lodestone','Magnetita',['lodestone'],1,[['chiseled_stone_bricks',8],['netherite',1]]],
+    ['conduit','Conducto',['conduit'],1,[['nautilus',8],['heart_sea',1]]],
+    ['nautilus','Concha de nautilo',['nautilus shell']],
+    ['heart_sea','Corazón del mar',['heart of the sea']],
+    // ---- Redstone y transporte ----
+    ['light_pp','Placa de presión ligera',['placa de presion de oro','light weighted pressure plate'],1,[['gold',2]]],
+    ['heavy_pp','Placa de presión pesada',['placa de presion de hierro','heavy weighted pressure plate'],1,[['iron',2]]],
+    ['tnt_minecart','Vagoneta con dinamita',['minecart with tnt','tnt minecart'],1,[['tnt',1],['minecart',1]]],
+    ['furnace_minecart','Vagoneta con horno',['minecart with furnace','furnace minecart'],1,[['furnace',1],['minecart',1]]],
+    ['calibrated_sensor','Sensor de sculk calibrado',['calibrated sculk sensor'],1,[['amethyst_shard',3],['sculk_sensor',1]]],
+    ['recovery_compass','Brújula de recuperación',['recovery compass'],1,[['echo_shard',8],['compass',1]]],
+    // ---- Herramientas y objetos ----
+    ['shield','Escudo',['shield'],1,[['planks',6],['iron',1]]],
+    ['crossbow','Ballesta',['crossbow'],1,[['stick',3],['string',2],['iron',1],['tripwire',1]]],
+    ['fishing_rod','Caña de pescar',['fishing rod'],1,[['stick',3],['string',2]]],
+    ['shears','Tijeras',['shears'],1,[['iron',2]]],
+    ['flint_steel','Mechero',['encendedor','flint and steel'],1,[['iron',1],['flint',1]]],
+    ['bucket','Balde',['cubo','bucket'],1,[['iron',3]]],
+    ['compass','Brújula',['compass'],1,[['iron',4],['redstone',1]]],
+    ['clock','Reloj',['clock'],1,[['gold',4],['redstone',1]]],
+    ['spyglass','Catalejo',['spyglass'],1,[['copper',2],['amethyst_shard',1]]],
+    ['lead','Rienda',['correa','lead'],2,[['string',4],['slimeball',1]]],
+    ['brush_tool','Pincel',['cepillo','brush'],1,[['feather',1],['copper',1],['stick',1]]],
+    ['arrow','Flecha',['flechas','arrow'],4,[['flint',1],['stick',1],['feather',1]]],
+    ['firework','Cohete de fuegos artificiales',['cohete','fuegos artificiales','firework rocket'],3,[['paper',1],['gunpowder',1]]],
+    ['glass_bottle','Botella de vidrio',['frasco','glass bottle'],3,[['glass',3]]],
+    ['map','Mapa vacío',['mapa','empty map'],1,[['paper',8],['compass',1]]],
+    ['bread','Pan',['bread'],1,[['wheat',3]]],
+    ['bowl','Cuenco',['bol','bowl'],4,[['planks',3]]],
+    ['mace','Maza',['mace'],1,[['heavy_core',1],['breeze_rod',1]]],
+    ['saddle','Silla de montar',['montura','saddle'],1,[['leather',3],['iron',1]]]
+  ];
+  for (const d of DATA) reg(...d);
+
+  // Madera por tipo
+  const WOODS = [
+    ['dark_oak','roble oscuro',/\b(roble oscuro|dark oak)\b/],
+    ['pale_oak','roble pálido',/\b(roble palido|pale oak)\b/],
+    ['oak','roble',/\b(roble|oak)\b/],
+    ['spruce','abeto',/\b(abeto|pino|spruce)\b/],
+    ['birch','abedul',/\b(abedul|birch)\b/],
+    ['jungle','jungla',/\b(jungla|selva|jungle)\b/],
+    ['acacia','acacia',/\bacacia\b/],
+    ['mangrove','mangle',/\b(mangle|mangrove)\b/],
+    ['cherry','cerezo',/\b(cerezo|cherry)\b/],
+    ['bamboo','bambú',/\b(bambu|bamboo)\b/],
+    ['crimson','carmesí',/\b(carmesi|crimson)\b/],
+    ['warped','distorsionado',/\b(distorsionad[oa]s?|warped)\b/]
+  ];
+  const WOOD_FAMS = [
+    ['chestboat', /\b(botes? con cofre|barcas? con cofre|balsas? con cofre|chest boats?|chest rafts?)\b/],
+    ['boat', /\b(botes?|barcas?|balsas?|boats?|rafts?)\b/],
+    ['gate', /\b(puertas? de (valla|cerca|verja)|portillos?|fence gates?)\b/],
+    ['hanging', /\b(colgantes?|hanging)\b/],
+    ['sign', /\b(letreros?|carteles?|signs?)\b/],
+    ['plate', /\b(placas?|pressure plates?)\b/],
+    ['trapdoor', /\b(trampillas?|trapdoors?)\b/],
+    ['door', /\b(puertas?|doors?)\b/],
+    ['fence', /\b(vallas?|cercas?|verjas?|fences?)\b/],
+    ['stairs', /\b(escaleras?|escalones?|stairs?)\b/],
+    ['slab', /\b(losas?|slabs?)\b/],
+    ['button', /\b(botones|boton|buttons?)\b/],
+    ['stripped', /\b(descortezad[oa]s?|sin corteza|stripped)\b/],
+    ['log', /\b(troncos?|tallos?|logs?|stems?|bloques? de bambu|bamboo blocks?)\b/],
+    ['wood', /\b(madera|hifas|wood|hyphae)\b/],
+    ['planks', /\b(tablones|tablon|tablas?|planks?)\b/]
+  ];
+  function ensureWood(wid, wname){
+    if (ITEMS.has(`w:${wid}:planks`)) return;
+    const nether = wid === 'crimson' || wid === 'warped', bam = wid === 'bamboo';
+    const W = (nether ? '' : 'de ') + wname;
+    const P = `w:${wid}:planks`, L = `w:${wid}:log`, S = `w:${wid}:stripped`, K = `w:${wid}:stick`;
+    const logName = bam ? 'Bloque de bambú' : nether ? `Tallo ${wname}` : `Tronco de ${wname}`;
+    const defs = {
+      log: [logName, bam ? 1 : 0, bam ? [['bamboo', 9]] : null],
+      planks: [`Tablones ${W}`, bam ? 2 : 4, [[L, 1]]],
+      stick: [`Palo (${wname})`, 4, [[P, 2]]],
+      stripped: [`${logName} descortezado`, 1, [[L, 1]], 'axe'],
+      wood: [nether ? `Hifas ${wname}` : `Madera ${W}`, 3, [[L, 4]]],
+      stairs: [`Escaleras ${W}`, 4, [[P, 6]]],
+      slab: [`Losas ${W}`, 6, [[P, 3]]],
+      fence: [`Valla ${W}`, 3, [[P, 4], [K, 2]]],
+      gate: [`Puerta de valla ${W}`, 1, [[P, 2], [K, 4]]],
+      door: [`Puerta ${W}`, 3, [[P, 6]]],
+      trapdoor: [`Trampilla ${W}`, 2, [[P, 6]]],
+      sign: [`Letrero ${W}`, 3, [[P, 6], [K, 1]]],
+      hanging: [`Letrero colgante ${W}`, 6, [[S, 6], ['chain', 2]]],
+      button: [`Botón ${W}`, 1, [[P, 1]]],
+      plate: [`Placa de presión ${W}`, 1, [[P, 2]]],
+      boat: [bam ? 'Balsa de bambú' : `Bote ${W}`, 1, [[P, 5]]],
+      chestboat: [bam ? 'Balsa de bambú con cofre' : `Bote ${W} con cofre`, 1, [[`w:${wid}:boat`, 1], ['chest', 1]]]
+    };
+    for (const [fam, d] of Object.entries(defs)) reg(`w:${wid}:${fam}`, d[0], [], d[1], d[2], d[3]);
+  }
+
+  // Bloques de color
+  const COLORS = [
+    ['azul claro',/\b(azul claro|celeste|light blue)\b/],
+    ['gris claro',/\b(gris claro|light gr[ae]y)\b/],
+    ['lima',/\b(verde lima|lima|lime)\b/],
+    ['blanco',/\b(blanc[oa]s?|white)\b/],
+    ['naranja',/\b(naranjas?|orange)\b/],
+    ['magenta',/\bmagenta\b/],
+    ['amarillo',/\b(amarill[oa]s?|yellow)\b/],
+    ['rosa',/\b(rosas?|rosad[oa]s?|pink)\b/],
+    ['gris',/\b(gris(es)?|gr[ae]y)\b/],
+    ['cian',/\b(cian|cyan)\b/],
+    ['morado',/\b(morad[oa]s?|purpura|purple)\b/],
+    ['azul',/\b(azul(es)?|blue)\b/],
+    ['marrón',/\b(marron(es)?|cafe|brown)\b/],
+    ['verde',/\b(verdes?|green)\b/],
+    ['rojo',/\b(roj[oa]s?|red)\b/],
+    ['negro',/\b(negr[oa]s?|black)\b/]
+  ];
+  const colorOf = n => { for (const [c, re] of COLORS) if (re.test(n)) return c; return ''; };
+  const CFAMS = [
+    ['cpowder', /\b(hormigon|concreto|cemento|concrete)\b/, /\b(polvo|powder)\b/],
+    ['concrete', /\b(hormigon|concreto|cemento|concrete)\b/],
+    ['spane', /\b(paneles?|panel|panes?|vidrieras?)\b/, /\b(vidrios?|cristal(es)?|glass)\b/],
+    ['sglass', /\b(vidrios?|cristal(es)?|glass)\b/],
+    ['carpet', /\b(alfombras?|carpets?)\b/],
+    ['wool', /\b(lanas?|wool)\b/],
+    ['glazed', /\b(terracotas?|terracotta|arcilla cocida)\b/, /\b(esmaltad[oa]s?|vidriad[oa]s?|glazed)\b/],
+    ['terra', /\b(terracotas?|terracotta|arcilla cocida)\b/],
+    ['dye', /\b(tintes?|dyes?)\b/]
+  ];
+  function colorItem(fam, c){
+    const tag = c ? ` (${c})` : '';
+    const dye = () => reg(`dye:${c}`, `Tinte${tag}`, [], 0);
+    const id = `col:${fam}:${c}`;
+    if (ITEMS.has(id)) return id;
+    switch (fam) {
+      case 'dye': return dye();
+      case 'cpowder': return reg(id, `Hormigón en polvo${tag}`, [], 8, [['sand', 4], ['gravel', 4], [dye(), 1]]);
+      case 'concrete': return reg(id, `Hormigón${tag}`, [], 1, [[colorItem('cpowder', c), 1]], 'water');
+      case 'sglass': return c ? reg(id, `Vidrio${tag}`, [], 8, [['glass', 8], [dye(), 1]]) : null;
+      case 'spane': return c ? reg(id, `Panel de vidrio${tag}`, [], 16, [[colorItem('sglass', c), 6]]) : null;
+      case 'wool': return c && c !== 'blanco' ? reg(id, `Lana${tag}`, [], 1, [['wool', 1], [dye(), 1]]) : null;
+      case 'carpet': return c && c !== 'blanco' ? reg(id, `Alfombra${tag}`, [], 3, [[colorItem('wool', c), 2]]) : null;
+      case 'terra': return c ? reg(id, `Terracota${tag}`, [], 8, [['terracotta', 8], [dye(), 1]]) : null;
+      case 'glazed': return c ? reg(id, `Terracota esmaltada${tag}`, [], 1, [[colorItem('terra', c), 1]], 'smelt') : null;
+    }
+    return null;
+  }
+
+  // Escaleras, losas y muros de cualquier bloque
+  const FAMS = [
+    ['stairs', /^(?:escaleras?|escalones?|peldanos?) de (.+)$/, /^(.+) stairs?$/, 4, 6, 1, 'Escaleras de '],
+    ['slab', /^losas? de (.+)$/, /^(.+) slabs?$/, 6, 3, 2, 'Losas de '],
+    ['wall', /^(?:muros?|paredes?|bardas?) de (.+)$/, /^(.+) walls?$/, 6, 6, 1, 'Muro de ']
+  ];
+
+  const TOOL_MATS = [
+    ['planks', /\b(madera|wooden|wood)\b/, 'madera'], ['cobble', /\b(piedra|stone)\b/, 'piedra'],
+    ['iron', /\b(hierro|iron)\b/, 'hierro'], ['gold', /\b(oro|golden|gold)\b/, 'oro'],
+    ['diamond', /\b(diamante|diamond)\b/, 'diamante'], ['leather', /\b(cuero|leather)\b/, 'cuero']
+  ];
+  const TOOL_KINDS = [
+    ['pickaxe', /\b(picos?|pickaxes?)\b/, 'Pico', 3, 2, true], ['axe', /\b(hachas?|axes?)\b/, 'Hacha', 3, 2, true],
+    ['shovel', /\b(palas?|shovels?)\b/, 'Pala', 1, 2, true], ['hoe', /\b(azadas?|azadones?|hoes?)\b/, 'Azada', 2, 2, true],
+    ['sword', /\b(espadas?|swords?)\b/, 'Espada', 2, 1, true], ['helmet', /\b(cascos?|helmets?)\b/, 'Casco', 5, 0, false],
+    ['chest', /\b(petos?|pecheras?|chestplates?)\b/, 'Peto', 8, 0, false], ['legs', /\b(pantalones|grebas|leggings)\b/, 'Pantalones', 7, 0, false],
+    ['boots', /\b(botas|boots)\b/, 'Botas', 4, 0, false]
+  ];
+  function toolItem(n){
+    const kind = TOOL_KINDS.find(([, re]) => re.test(n));
+    if (!kind) return null;
+    const mat = TOOL_MATS.find(([, re]) => re.test(n));
+    if (!mat) return null;
+    const [kid, , label, q, sticks, isTool] = kind;
+    if (isTool && mat[0] === 'leather') return null;
+    if (!isTool && (mat[0] === 'planks' || mat[0] === 'cobble')) return null;
+    const id = `t:${kid}:${mat[0]}`;
+    if (!ITEMS.has(id)) reg(id, `${label} de ${mat[2]}`, [], 1, sticks ? [[mat[0], q], ['stick', sticks]] : [[mat[0], q]]);
+    return id;
+  }
+
+  function rawItem(text){
+    const k = keyOf(text);
+    const id = 'raw:' + k;
+    if (!ITEMS.has(id)) reg(id, cap(text.trim()), [], 0);
+    return id;
+  }
+
+  const building = new Set();
+  function customItem(k){
+    const id = 'c:' + k;
+    if (building.has(k)) return id;
+    const c = state.custom[k];
+    building.add(k);
+    ITEMS.set(id, { id, name: c.name, custom: true, r: { y: c.y, in: [], m: 'craft', sc: 0 } });
+    const ins = c.in.map(([nm, q]) => [keyOf(nm) === k ? rawItem(nm) : (resolve(nm) || rawItem(nm)), q]);
+    ITEMS.get(id).r.in = ins;
+    building.delete(k);
+    return id;
+  }
+
+  function resolve(name, depth){
+    depth = depth || 0;
+    const k = keyOf(name);
+    if (!k || depth > 6) return null;
+    if (state.custom[k]) return customItem(k);
+    if (INDEX.has(k)) return INDEX.get(k);
+    const n = norm(name).replace(/\s+/g, ' ');
+    const tool = toolItem(n);
+    if (tool) return tool;
+    const c = colorOf(n);
+    for (const [fam, re, re2] of CFAMS) {
+      if (re.test(n) && (!re2 || re2.test(n))) { const id = colorItem(fam, c); if (id) return id; }
+    }
+    for (const [wid, wname, re] of WOODS) {
+      if (!re.test(n)) continue;
+      for (const [fam, fre] of WOOD_FAMS) if (fre.test(n)) { ensureWood(wid, wname); return `w:${wid}:${fam}`; }
+      break;
+    }
+    for (const [fam, es, en, y, q, sc, label] of FAMS) {
+      const m = n.match(es) || n.match(en);
+      if (!m) continue;
+      const baseN = m[1].trim();
+      const start = n.indexOf(baseN);
+      const orig = name.trim().replace(/\s+/g, ' ');
+      const baseText = orig.slice(start, start + baseN.length) || baseN;
+      const baseId = resolve(baseText, depth + 1) || rawItem(baseText);
+      const id = `f:${fam}:${baseId}`;
+      if (!ITEMS.has(id)) {
+        const woodish = baseId === 'planks' || baseId.startsWith('w:');
+        reg(id, label + lowerFirst(ITEMS.get(baseId).name), [], y, [[baseId, q]], 'craft', woodish ? 0 : sc);
+      }
+      return id;
+    }
+    return null;
+  }
+  function hasRecipe(name){
+    const id = resolve(name);
+    return !!(id && ITEMS.get(id) && ITEMS.get(id).r);
+  }
+
+  // Cálculo: orden topológico y demanda acumulada, así los sobrantes se comparten
+  // (por ejemplo, los palos que piden varias recetas a la vez).
+  const isPlanks = id => id === 'planks' || /^w:[^:]+:planks$/.test(id);
+  const WOOD_LABEL = { planks: 'Contar tablones', log: 'Bajar a troncos', bamboo: 'Bajar a bloques de bambú' };
+  function breakdown(roots, keep, useSc, wood){
+    wood = wood || 'planks';
+    if (wood === 'bamboo') ensureWood('bamboo', 'bambú');
+    const rootSet = new Set(roots.map(r => r[0]));
+    let hasPlanks = false;
+    const forceRaw = new Set();
+    const recOf = id => {
+      const it = ITEMS.get(id);
+      if (!it || !it.r || forceRaw.has(id)) return null;
+      if (!rootSet.has(id) && keep.has(id)) return null;
+      if (isPlanks(id)) {
+        hasPlanks = true;
+        if (wood === 'planks' && !rootSet.has(id)) return null;
+        // Los tablones genéricos sirven de cualquier madera: con bambú, 1 bloque da 2 tablones
+        if (wood === 'bamboo' && id === 'planks') return { y: 2, in: [['w:bamboo:log', 1]], m: 'craft' };
+      }
+      // El bloque de bambú es el material de origen, igual que un tronco (se indica a cuánto bambú equivale)
+      if (id === 'w:bamboo:log' && !rootSet.has(id)) return null;
+      if (useSc && it.r.sc) return { y: it.r.sc, in: [[it.r.in[0][0], 1]], m: 'sc' };
+      return it.r;
+    };
+    const order = [], seen = new Set(), stack = new Set();
+    let cycle = false;
+    function visit(id){
+      if (seen.has(id)) return;
+      seen.add(id); stack.add(id);
+      const r = recOf(id);
+      if (r) for (const [c] of r.in) {
+        if (stack.has(c)) { forceRaw.add(c); cycle = true; continue; }
+        visit(c);
+      }
+      stack.delete(id);
+      order.push(id);
+    }
+    for (const [id] of roots) visit(id);
+    const need = new Map();
+    for (const [id, q] of roots) need.set(id, (need.get(id) || 0) + q);
+    const steps = [], raw = [];
+    for (let i = order.length - 1; i >= 0; i--) {
+      const id = order[i], n = need.get(id) || 0;
+      if (n <= 0) continue;
+      const r = recOf(id);
+      if (!r) { raw.push({ id, n }); continue; }
+      const crafts = Math.ceil(n / r.y);
+      steps.push({ id, n, crafts, made: crafts * r.y, left: crafts * r.y - n, r, root: rootSet.has(id) });
+      for (const [c, q] of r.in) need.set(c, (need.get(c) || 0) + q * crafts);
+    }
+    raw.sort((a, b) => b.n - a.n);
+    steps.reverse();
+    const hasSc = [...seen].some(id => ITEMS.get(id) && ITEMS.get(id).r && ITEMS.get(id).r.sc);
+    return { raw, steps, cycle, hasSc, hasPlanks };
+  }
+
+  // ================= Ventana de desglose =================
+  const dlg = $('craftDlg');
+  let ds = null;
+  const METHOD = {
+    craft: ['crafteo', 'crafteos', 'mesa de trabajo'],
+    smelt: ['fundición', 'fundiciones', 'horno'],
+    sc: ['corte', 'cortes', 'cortapiedras'],
+    axe: ['uso', 'usos', 'hacha'],
+    water: ['bloque', 'bloques', 'en contacto con agua']
+  };
+  const iname = id => (ITEMS.get(id) ? ITEMS.get(id).name : id);
+  function stacksOf(id, n){
+    const ss = detectSS(iname(id));
+    if (ss === 1) return `${nf.format(n)} sueltos`;
+    const f = Math.floor(n / ss), r = n % ss;
+    return (f ? `${nf.format(f)} st${r ? ` + ${r}` : ''}` : `${r}`) + (ss !== 64 ? ` (de ${ss})` : '');
+  }
+  function rowQty(r){
+    const ss = effSS(r);
+    const q = parseQty(r.qty, ss);
+    if (!(q.v > 0)) return 0;
+    if (r.done) return 0;
+    const h = parseQty(r.have || '', ss);
+    const have = state.subtract && h.v > 0 ? h.v : 0;
+    return Math.max(0, q.v * state.mult - have);
+  }
+
+  function newEditor(name, it){
+    const rec = it && it.r;
+    return {
+      name: name.trim(),
+      y: rec ? rec.y : 1,
+      rows: rec ? rec.in.map(([id, q]) => ({ name: iname(id), q })) : [{ name: '', q: 1 }, { name: '', q: 1 }],
+      editing: !!rec,
+      status: ''
+    };
+  }
+
+  function openOne(id, title, q, back, color){
+    const it = ITEMS.get(id);
+    ds = {
+      mode: 'one', title, qty: q || 1, qtyText: String(q || 1), qtyErr: '', listQty: q || 0, noQty: !q,
+      roots: [[id, q || 1]], keep: new Set(), sc: back ? back.sc : false,
+      ed: it.r ? null : newEditor(title, null), back: back || null, color
+    };
+    renderDlg();
+    if (!dlg.open && dlg.showModal) dlg.showModal();
+  }
+  function openForRow(r){
+    if (!r.name.trim()) return;
+    openOne(resolve(r.name) || rawItem(r.name), r.name.trim(), rowQty(r), null, r.color);
+  }
+  function openForAll(){
+    const roots = new Map(), names = new Map(), colors = new Map();
+    for (const r of state.rows) {
+      if (!r.name.trim()) continue;
+      const q = rowQty(r); if (!q) continue;
+      const id = resolve(r.name) || rawItem(r.name);
+      roots.set(id, (roots.get(id) || 0) + q);
+      if (!names.has(id)) { names.set(id, r.name.trim()); colors.set(id, r.color); }
+    }
+    ds = { mode: 'all', title: 'Toda la lista', roots: [...roots], names, colors, view: (ds && ds.mode === 'all' && ds.view) || 'total', keep: new Set(), sc: false, ed: null };
+    renderDlg();
+    if (!dlg.open && dlg.showModal) dlg.showModal();
+  }
+
+  function renderEditor(){
+    const e = ds.ed;
+    const k = keyOf(e.name);
+    const hasCustom = !!state.custom[k];
+    const saved = state.custom[k];
+    if (saved) delete state.custom[k];
+    const bid = resolve(e.name);
+    if (saved) state.custom[k] = saved;
+    const builtin = !!(bid && ITEMS.get(bid) && ITEMS.get(bid).r);
+    return `<div class="editor">
+      <p>${e.editing ? `Editando la receta de <strong>${esc(e.name)}</strong>.` : `No tengo la receta de <strong>${esc(e.name)}</strong>. Escríbela y queda guardada en este navegador para las próximas veces.`}</p>
+      <p class="fine">Los ingredientes pueden tener receta propia (por ejemplo Cofre o Tablones), y el desglose sigue bajando hasta los materiales brutos.</p>
+      <div class="ed-yield"><label class="lbl" for="edY">Cada crafteo produce</label><input id="edY" type="number" min="1" step="1" value="${e.y}"></div>
+      <div class="ed-rows">
+        ${e.rows.map((r, i) => `<div class="ed-row" data-i="${i}">
+          <input class="n" id="edN${i}" list="itemNames" placeholder="Ingrediente" value="${esc(r.name)}" aria-label="Ingrediente ${i + 1}" autocomplete="off">
+          <input class="q" id="edQ${i}" type="number" min="1" step="1" value="${r.q}" aria-label="Cantidad del ingrediente ${i + 1}">
+          <button class="icon-btn del ed-del" type="button" aria-label="Quitar ingrediente ${i + 1}">${X_ICON}</button>
+        </div>`).join('')}
+      </div>
+      <div class="toolbar"><button class="btn" type="button" id="edAdd">Agregar ingrediente</button></div>
+      <div class="toolbar">
+        <button class="btn btn-primary" type="button" id="edSave">Guardar receta</button>
+        <button class="btn" type="button" id="edCancel">Cancelar</button>
+        ${hasCustom && builtin ? '<button class="btn" type="button" id="edReset">Volver a la receta original</button>' : ''}
+        ${hasCustom && !builtin ? '<button class="btn" type="button" id="edReset">Borrar esta receta</button>' : ''}
+      </div>
+      <p class="status" role="status">${esc(e.status)}</p>
+    </div>`;
+  }
+
+  function renderDlg(){
+    const act = document.activeElement;
+    const focusSel = act && dlg.contains(act) && act.id ? '#' + CSS.escape(act.id) : null;
+    const caret = focusSel && typeof act.selectionStart === 'number' && act.type === 'text' ? [act.selectionStart, act.selectionEnd] : null;
+    const qtyLabel = ds.mode === 'one' ? ` <span class="x">× ${nf.format(ds.qty)}</span>` : '';
+    let body = '';
+    if (ds.ed) {
+      body = renderEditor();
+    } else {
+      const b = breakdown(ds.roots, ds.keep, ds.sc, state.wood);
+      const raws = rawList(b);
+      const rawSlots = raws.reduce((a, x) => a + Math.ceil(x.n / detectSS(iname(x.id))), 0);
+      const gotN = raws.filter(x => state.gathered[x.id]).length;
+      const si = smeltInfo(b);
+      const qtyField = ds.mode === 'one' ? `<div class="qty-field">
+          <label class="lbl" for="dQty">Calcular para</label>
+          <input id="dQty" value="${esc(ds.qtyText)}" autocomplete="off" spellcheck="false" aria-invalid="${ds.qtyErr ? 'true' : 'false'}" aria-describedby="dQtyErr">
+          <span class="err" id="dQtyErr" role="status">${esc(ds.qtyErr)}</span>
+          ${ds.listQty && ds.qty !== ds.listQty && !ds.qtyErr ? `<button class="mini-btn" type="button" id="dQtyReset">Usar la de la lista (${nf.format(ds.listQty)})</button>` : ''}
+        </div>` : `<div class="seg" role="radiogroup" aria-label="Vista del desglose">
+          <input type="radio" name="dView" id="dvTotal" value="total" ${ds.view !== 'split' ? 'checked' : ''}><label for="dvTotal">Todo junto</label>
+          <input type="radio" name="dView" id="dvSplit" value="split" ${ds.view === 'split' ? 'checked' : ''}><label for="dvSplit">Por material</label>
+        </div>`;
+      const bar = `<div class="dlg-bar">${qtyField}</div><div class="dlg-bar">
+        <div class="toolbar">
+          ${b.hasPlanks ? `<label class="qty-field"><span class="lbl">Madera</span><select id="dWood">${Object.entries(WOOD_LABEL).map(([v, l]) => `<option value="${v}" ${state.wood === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}
+          ${b.hasSc ? `<label class="check" style="padding:0"><input type="checkbox" id="dSc" ${ds.sc ? 'checked' : ''}> Usar cortapiedras cuando rinde más</label>` : ''}
+        </div>
+        <div class="toolbar">
+          ${ds.mode === 'one' ? '<button class="btn" type="button" id="dEdit">Editar receta</button>' : ''}
+          <button class="btn" type="button" id="dCopy">Copiar desglose</button>
+        </div>
+      </div>`;
+      const rawTable = `<section aria-labelledby="dRawH">
+        <h3 id="dRawH">Materiales brutos<span class="prog">${gotN} de ${raws.length} juntados</span>${gotN ? '<button class="mini-btn" type="button" id="dGatherReset">Desmarcar todo</button>' : ''}</h3>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Material</th><th class="num">Cantidad</th><th class="num">Stacks</th></tr></thead>
+          <tbody>${raws.map(x => `<tr class="${state.gathered[x.id] ? 'got' : ''}">
+            <td><label class="gcheck"><input type="checkbox" data-gather="${esc(x.id)}" id="g-${esc(x.id)}" ${state.gathered[x.id] ? 'checked' : ''}>${iconFor(iname(x.id))}<span class="gname">${esc(iname(x.id))}${x.fuel ? ' <small>(combustible)</small>' : ''}</span></label>${ds.keep.has(x.id) ? `<br><span class="kept">ya lo tienes crafteado</span><button class="mini-btn" type="button" data-unkeep="${esc(x.id)}">Desglosar</button>` : ''}${equivNote(x.id, x.n)}</td>
+            <td class="num">${nf.format(x.n)}</td>
+            <td class="num">${stacksOf(x.id, x.n)}</td>
+          </tr>`).join('')}</tbody>
+          <tfoot><tr><td>Espacios</td><td class="num"></td><td class="num">${nf.format(rawSlots)} <small>(${nf1.format(rawSlots / 27)} SB)</small></td></tr></tfoot>
+        </table></div>
+      </section>`;
+      const steps = b.steps.length ? `<ol class="steps">${b.steps.map(s => {
+        const M = METHOD[s.r.m] || METHOD.craft;
+        const per = s.r.in.map(([c, q]) => `${q} ${esc(iname(c))}`).join(' + ');
+        return `<li>
+          <div class="step-top"><strong class="sname">${iconFor(iname(s.id))}${esc(iname(s.id))}</strong><span class="num">${nf.format(s.made)}</span></div>
+          <div class="step-sub">${nf.format(s.crafts)} ${s.crafts === 1 ? M[0] : M[1]} en ${M[2]}: ${per} → ${s.r.y}</div>
+          ${s.left ? `<div class="step-sub left">Sobran ${nf.format(s.left)}</div>` : ''}
+          ${s.root ? '' : `<label class="check sm"><input type="checkbox" id="k-${esc(s.id)}" data-keep="${esc(s.id)}"> Ya lo tengo, no desglosar</label>`}
+        </li>`;
+      }).join('')}</ol>` : '<p class="fine">Nada que craftear: todo lo de la lista ya es material bruto.</p>';
+      const fuel = si ? `<div class="fuel">
+          <h3>Fundición</h3>
+          <p>${nf.format(si.n)} ítems para fundir. Combustible: <strong>${nf.format(si.coal)} carbón</strong>, o ${nf.format(si.blocks)} bloques de carbón, o ${nf.format(si.lava)} cubos de lava.</p>
+          <div class="qty-field"><label class="lbl" for="dFurn">Hornos en paralelo</label><input id="dFurn" type="number" min="1" max="64" step="1" value="${state.furnaces}"><span>tarda unos <strong>${si.time}</strong></span></div>
+          <label class="check sm"><input type="checkbox" id="dFuel" ${state.addFuel ? 'checked' : ''}> Sumar el carbón a los materiales brutos</label>
+        </div>` : '';
+      const main = ds.mode === 'all' && ds.view === 'split' ? splitView() : `<div class="dlg-cols">${rawTable}<section aria-labelledby="dStepH"><h3 id="dStepH">Pasos de crafteo</h3>${steps}${fuel}</section></div>`;
+      body = `${bar}
+        ${ds.noQty ? '<p class="note">Este material no tiene cantidad en la lista, así que el desglose parte de 1 unidad. Puedes cambiarla arriba.</p>' : ''}
+        ${b.cycle ? '<p class="note">Una receta se usa a sí misma en algún paso; ese material se cuenta como bruto para cortar el ciclo.</p>' : ''}
+        ${main}
+        <p class="fine">Cada fundición tarda 10 segundos en un horno común. Las casillas de juntado se guardan con la lista. Los lingotes y minerales se consideran brutos, y los tablones también salvo que marques bajar hasta troncos.</p>`;
+    }
+    dlg.innerHTML = `<div class="dlg-head">
+        <div>${ds.back ? '<button class="back-btn" type="button" id="dBack">← Volver a toda la lista</button>' : '<div class="lbl">Desglose de crafteo</div>'}<h2 id="dlgTitle">${esc(ds.title)}${qtyLabel}</h2></div>
+        <button class="icon-btn" type="button" id="dClose" aria-label="Cerrar">${X_ICON}</button>
+      </div>
+      <div class="dlg-body">${body}</div>`;
+    if (focusSel) {
+      const f = dlg.querySelector(focusSel);
+      if (f) { f.focus(); if (caret) try { f.setSelectionRange(caret[0], caret[1]); } catch (err) {} }
+    }
+  }
+
+  // Vista por material: cada material de la lista con sus propios brutos
+  function splitView(){
+    const crafted = [], plain = [];
+    ds.roots.forEach(([id, q], i) => {
+      const it = ITEMS.get(id);
+      if (it && it.r) crafted.push([id, q, i]); else plain.push([id, q]);
+    });
+    const sw = id => `<span class="swatch" style="background:var(--m${ds.colors.get(id) || 8})"></span>`;
+    const cards = crafted.map(([id, q, i]) => {
+      const b1 = breakdown([[id, q]], ds.keep, ds.sc, state.wood);
+      return `<section class="split-card">
+        <div class="split-head"><h3>${sw(id)}${iconFor(ds.names.get(id), ds.colors.get(id))}<span>${esc(ds.names.get(id))}</span> <span class="x">× ${nf.format(q)}</span></h3>
+          <button class="mini-btn" type="button" data-open="${i}">Ver pasos</button></div>
+        <table><tbody>${b1.raw.map(x => `<tr><td>${esc(iname(x.id))}</td><td class="num">${nf.format(x.n)}</td><td class="num">${stacksOf(x.id, x.n)}</td></tr>`).join('')}</tbody></table>
+      </section>`;
+    });
+    if (plain.length) cards.push(`<section class="split-card">
+        <div class="split-head"><h3>Sin crafteo</h3></div>
+        <table><tbody>${plain.map(([id, q]) => `<tr><td><span class="mat">${sw(id)}${iconFor(ds.names.get(id), ds.colors.get(id))}<span>${esc(ds.names.get(id))}</span></span></td><td class="num">${nf.format(q)}</td><td class="num">${stacksOf(id, q)}</td></tr>`).join('')}</tbody></table>
+      </section>`);
+    return `<div class="split">${cards.join('')}</div>
+      <p class="fine">Cada material se calcula por separado. En "Todo junto" los sobrantes se comparten entre recetas, así que la suma de estas tarjetas puede salir un poco mayor.</p>`;
+  }
+
+  // Fundición: carbón repartido entre hornos (cada carbón funde 8, bloque 80, lava 100)
+  function smeltInfo(b){
+    const n = b.steps.filter(s => s.r.m === 'smelt').reduce((a, s) => a + s.crafts, 0);
+    if (!n) return null;
+    const f = Math.max(1, Math.min(state.furnaces, n));
+    const base = Math.floor(n / f), extra = n % f;
+    const per = k => extra * Math.ceil((base + 1) / k) + (f - extra) * Math.ceil(base / k);
+    const secs = Math.ceil(n / f) * 10;
+    const h = Math.floor(secs / 3600), m = Math.floor((secs % 3600) / 60), sc = secs % 60;
+    const time = h ? `${h} h ${m} min` : m ? `${m} min${sc ? ` ${sc} s` : ''}` : `${sc} s`;
+    return { n, f, coal: per(8), blocks: per(80), lava: per(100), time };
+  }
+  const gotLast = list => list.sort((a, z) => ((state.gathered[a.id] ? 1 : 0) - (state.gathered[z.id] ? 1 : 0)) || (z.n - a.n));
+  function rawList(b){
+    const raw = b.raw.map(x => ({ ...x }));
+    const si = smeltInfo(b);
+    if (state.addFuel && si) {
+      const c = raw.find(x => x.id === 'coal');
+      if (c) c.n += si.coal; else raw.push({ id: 'coal', n: si.coal, fuel: true });
+    }
+    return gotLast(raw);
+  }
+
+  function equivNote(id, n){
+    if (id === 'w:bamboo:log') return `<br><span class="kept">equivale a ${nf.format(n * 9)} bambú</span>`;
+    if (id === 'planks') return `<br><span class="kept">equivale a ${nf.format(Math.ceil(n / 4))} troncos o ${nf.format(Math.ceil(n / 2))} bloques de bambú</span>`;
+    if (isPlanks(id) && ITEMS.get(id) && ITEMS.get(id).r) {
+      const r = ITEMS.get(id).r;
+      return `<br><span class="kept">equivale a ${nf.format(Math.ceil(n / r.y))} ${iname(r.in[0][0]).toLowerCase().startsWith('bloque') ? 'bloques' : 'troncos'}</span>`;
+    }
+    return '';
+  }
+
+  function breakdownText(){
+    if (ds.mode === 'all' && ds.view === 'split') {
+      const lines = ['Desglose por material', ''];
+      for (const [id, q] of ds.roots) {
+        lines.push(`${ds.names.get(id)} x${q}:`);
+        const it = ITEMS.get(id);
+        if (!it || !it.r) { lines.push('- no se craftea', ''); continue; }
+        for (const x of breakdown([[id, q]], ds.keep, ds.sc, state.wood).raw) lines.push(`- ${iname(x.id)}: ${nf.format(x.n)} (${stacksOf(x.id, x.n)})`);
+        lines.push('');
+      }
+      return lines.join('\n').trim();
+    }
+    const b = breakdown(ds.roots, ds.keep, ds.sc, state.wood);
+    const lines = [`Desglose: ${ds.title}${ds.mode === 'one' ? ` x${ds.qty}` : ''}`, '', 'Materiales brutos:'];
+    for (const x of rawList(b)) lines.push(`${state.gathered[x.id] ? '[x]' : '[ ]'} ${iname(x.id)}: ${nf.format(x.n)} (${stacksOf(x.id, x.n)})`);
+    const si = smeltInfo(b);
+    if (si) lines.push('', `Fundición: ${nf.format(si.n)} ítems, ${nf.format(si.coal)} carbón, ${si.time} con ${si.f} horno${si.f > 1 ? 's' : ''}`);
+    if (b.steps.length) {
+      lines.push('', 'Pasos:');
+      b.steps.forEach((s, i) => {
+        const M = METHOD[s.r.m] || METHOD.craft;
+        lines.push(`${i + 1}. ${iname(s.id)}: ${nf.format(s.made)} (${nf.format(s.crafts)} ${s.crafts === 1 ? M[0] : M[1]} en ${M[2]})${s.left ? `, sobran ${s.left}` : ''}`);
+      });
+    }
+    return lines.join('\n');
+  }
+
+  dlg.addEventListener('click', e => {
+    if (e.target === dlg) { dlg.close(); return; }
+    const t = e.target.closest('button'); if (!t) return;
+    if (t.id === 'dClose') { dlg.close(); return; }
+    if (t.dataset.unkeep) { ds.keep.delete(t.dataset.unkeep); renderDlg(); return; }
+    if (t.id === 'dBack') { ds = ds.back; renderDlg(); return; }
+    if (t.dataset.open) { const [id, q] = ds.roots[+t.dataset.open]; openOne(id, ds.names.get(id), q, ds, ds.colors.get(id)); dlg.querySelector('#dClose').focus(); return; }
+    if (t.id === 'dGatherReset') { state.gathered = {}; save(); renderDlg(); return; }
+    if (t.id === 'dQtyReset') { ds.qty = ds.listQty; ds.qtyText = String(ds.listQty); ds.qtyErr = ''; ds.roots = [[ds.roots[0][0], ds.listQty]]; renderDlg(); return; }
+    if (t.id === 'dCopy') {
+      const text = breakdownText();
+      const done = () => { t.textContent = 'Copiado'; setTimeout(() => { if (t.isConnected) t.textContent = 'Copiar desglose'; }, 1800); };
+      const fail = () => { t.textContent = 'No se pudo copiar'; };
+      try { navigator.clipboard.writeText(text).then(done, fail); } catch (err) { fail(); }
+      return;
+    }
+    if (t.id === 'dEdit') {
+      const id = ds.roots[0][0];
+      ds.ed = newEditor(ds.title, ITEMS.get(id));
+      renderDlg(); return;
+    }
+    if (!ds.ed) return;
+    const e2 = ds.ed;
+    if (t.id === 'edAdd') { e2.rows.push({ name: '', q: 1 }); renderDlg(); const n = dlg.querySelector(`#edN${e2.rows.length - 1}`); if (n) n.focus(); return; }
+    if (t.classList.contains('ed-del')) { const i = +t.closest('.ed-row').dataset.i; e2.rows.splice(i, 1); if (!e2.rows.length) e2.rows.push({ name: '', q: 1 }); renderDlg(); return; }
+    if (t.id === 'edCancel') {
+      const id = resolve(ds.title) || rawItem(ds.title);
+      if (ITEMS.get(id).r) { ds.ed = null; ds.roots = [[id, ds.qty]]; renderDlg(); } else dlg.close();
+      return;
+    }
+    if (t.id === 'edReset') {
+      delete state.custom[keyOf(e2.name)];
+      save();
+      const id = resolve(ds.title) || rawItem(ds.title);
+      ds.roots = [[id, ds.qty]]; ds.keep.clear();
+      ds.ed = ITEMS.get(id).r ? null : newEditor(ds.title, null);
+      renderDlg(); renderRows();
+      return;
+    }
+    if (t.id === 'edSave') {
+      const y = Math.floor(+e2.y);
+      const ins = e2.rows.filter(r => r.name.trim()).map(r => [r.name.trim(), Math.floor(+r.q)]);
+      if (!(y >= 1)) { e2.status = 'La cantidad que produce cada crafteo tiene que ser 1 o más.'; renderDlg(); return; }
+      if (!ins.length) { e2.status = 'Agrega al menos un ingrediente con nombre.'; renderDlg(); return; }
+      if (ins.some(x => !(x[1] >= 1))) { e2.status = 'Cada ingrediente necesita una cantidad de 1 o más.'; renderDlg(); return; }
+      state.custom[keyOf(e2.name)] = { name: e2.name, y, in: ins };
+      save();
+      const id = resolve(ds.title);
+      ds.roots = [[id, ds.qty]]; ds.keep.clear(); ds.ed = null;
+      renderDlg(); renderRows();
+    }
+  });
+  dlg.addEventListener('input', e => {
+    if (ds && e.target.id === 'dFurn') {
+      const v = parseInt(e.target.value, 10);
+      if (v >= 1 && v <= 64) { state.furnaces = v; save(); renderDlg(); }
+      return;
+    }
+    if (ds && e.target.id === 'dQty') {
+      ds.qtyText = e.target.value;
+      const q = parseQty(e.target.value, detectSS(ds.title));
+      if (q.v > 0) { ds.qty = q.v; ds.roots = [[ds.roots[0][0], q.v]]; ds.qtyErr = ''; ds.noQty = false; }
+      else ds.qtyErr = e.target.value.trim() ? 'No reconozco esa cantidad.' : 'Escribe una cantidad.';
+      renderDlg();
+      return;
+    }
+    if (!ds || !ds.ed) return;
+    const t = e.target;
+    if (t.id === 'edY') { ds.ed.y = t.value; return; }
+    const row = t.closest('.ed-row'); if (!row) return;
+    const r = ds.ed.rows[+row.dataset.i];
+    if (t.classList.contains('n')) r.name = t.value; else if (t.classList.contains('q')) r.q = t.value;
+  });
+  dlg.addEventListener('change', e => {
+    if (!ds || ds.ed) return;
+    const t = e.target;
+    if (t.name === 'dView') { ds.view = t.value; renderDlg(); return; }
+    if (t.dataset.gather) { const g = { ...state.gathered }; if (t.checked) g[t.dataset.gather] = true; else delete g[t.dataset.gather]; state.gathered = g; save(); renderDlg(); return; }
+    if (t.id === 'dFuel') { state.addFuel = t.checked; save(); renderDlg(); return; }
+    if (t.id === 'dSc') { ds.sc = t.checked; renderDlg(); return; }
+    if (t.id === 'dWood') { state.wood = t.value; save(); renderDlg(); renderResults(); return; }
+    if (t.dataset.keep) { if (t.checked) ds.keep.add(t.dataset.keep); else ds.keep.delete(t.dataset.keep); renderDlg(); }
+  });
+
+  const GRIP = '<svg width="10" height="16" viewBox="0 0 10 16" aria-hidden="true"><g fill="currentColor"><rect x="1" y="2" width="3" height="3"/><rect x="6" y="2" width="3" height="3"/><rect x="1" y="6.5" width="3" height="3"/><rect x="6" y="6.5" width="3" height="3"/><rect x="1" y="11" width="3" height="3"/><rect x="6" y="11" width="3" height="3"/></g></svg>';
+
+  function rowTotal(r){
+    const q = parseQty(r.qty, effSS(r));
+    return isNaN(q.v) ? -1 : q.v;
+  }
+  // Orden estable de mayor a menor; devuelve true si cambió algo
+  function sortRows(){
+    const before = state.rows.map(r => r.id).join();
+    state.rows = state.rows
+      .map((r, i) => ({ r, i, t: rowTotal(r) }))
+      .sort((a, b) => ((a.r.done ? 1 : 0) - (b.r.done ? 1 : 0)) || (b.t - a.t) || (a.i - b.i))
+      .map(x => x.r);
+    return before !== state.rows.map(r => r.id).join();
+  }
+  // Pendientes arriba, listos abajo, sin cambiar el orden dentro de cada grupo
+  function partitionDone(){
+    state.rows = [...state.rows.filter(r => !r.done), ...state.rows.filter(r => r.done)];
+  }
+  function placeDone(){ if (state.order === 'desc') sortRows(); else partitionDone(); }
+  function setOrder(o){
+    state.order = o;
+    $(o === 'desc' ? 'orderDesc' : 'orderManual').checked = true;
+  }
+  function resortIfNeeded(){
+    if (state.order === 'desc' && sortRows()) renderRows();
+  }
+
+  function renderRows(){
+    const act = document.activeElement;
+    const actId = act && rowsEl.contains(act) ? act.id : null;
+    const caret = actId && act.tagName === 'INPUT' ? [act.selectionStart, act.selectionEnd] : null;
+    const pendingN = state.rows.filter(r => !r.done).length, doneN = state.rows.length - pendingN;
+    rowsEl.innerHTML = state.rows.map((r, i) => `${i === pendingN && doneN ? `<div class="done-sep" role="separator"><span>Listos (${doneN})</span><button class="mini-btn" type="button" id="undoneAll">Desmarcar todos</button></div>` : ''}
+      <div class="row${r.done ? ' is-done' : ''}" data-id="${r.id}">
+        <input type="checkbox" class="done-check" id="done-${r.id}" ${r.done ? 'checked' : ''} aria-label="Ya tengo todo de ${esc(r.name || 'este material')}" title="Ya tengo todo">
+        <button class="handle" id="h-${r.id}" style="color:var(--m${r.color})" type="button" title="Arrastra para mover" aria-label="Mover material ${i + 1}${r.name ? ' (' + esc(r.name) + ')' : ''}. Usa flecha arriba o abajo">${GRIP}</button>
+        <div class="namewrap"><span class="ico-slot"></span><input class="name" id="name-${r.id}" list="itemNames" aria-label="Material ${i + 1}" placeholder="Material" value="${esc(r.name)}" autocomplete="off" spellcheck="false"></div>
+        <input class="qty" id="qty-${r.id}" aria-label="Cantidad del material ${i + 1}" placeholder="ej. 3st" value="${esc(r.qty)}" autocomplete="off" spellcheck="false">
+        <input class="have" id="have-${r.id}" aria-label="Cantidad que ya tienes del material ${i + 1}" placeholder="Tengo" value="${esc(r.have || '')}" autocomplete="off" spellcheck="false">
+        <select class="ss" id="ss-${r.id}" aria-label="Tamaño de stack del material ${i + 1}" title="Tamaño de stack">
+          <option value="auto">64</option><option value="64">64 fijo</option><option value="16">16 fijo</option><option value="1">1 fijo</option>
+        </select>
+        <button class="icon-btn craft" type="button" aria-label="Desglose de crafteo del material ${i + 1}">${GRID_ICON}</button>
+        <button class="icon-btn del" type="button" aria-label="Quitar material ${i + 1}">${X_ICON}</button>
+        <div class="hint" hidden></div>
+      </div>`).join('');
+    rowsEl.querySelectorAll('.row').forEach(el => {
+      const r = findRow(el);
+      el.querySelector('.ss').value = String(r.ss);
+      refreshRow(el, r);
+    });
+    $('exampleBadge').hidden = true;
+    $('starter').hidden = !state.rows.every(r => !r.name.trim() && !r.qty.trim());
+    if (actId && $(actId)) {
+      const f = $(actId); f.focus();
+      if (caret) try { f.setSelectionRange(caret[0], caret[1]); } catch (err) {}
+    }
+  }
+
+  function findRow(el){ const id = el && el.dataset.id; return state.rows.find(r => r.id === id); }
+  function haveOf(r, ss){ return parseQty(r.have || '', ss); }
+
+  function stackText(n, ss){
+    if (ss === 1) return `${nf.format(n)} sueltos`;
+    const f = Math.floor(n / ss), r = n % ss;
+    return f ? `${nf.format(f)} st${r ? ` + ${r}` : ''}` : `${r} sueltos`;
+  }
+  function refreshRow(el, r){
+    const ss = effSS(r);
+    const sel = el.querySelector('.ss');
+    sel.querySelector('option[value="auto"]').textContent = String(detectSS(r.name));
+    sel.classList.toggle('is-auto', r.ss === 'auto');
+    el.querySelector('.ico-slot').innerHTML = iconFor(r.name, r.color);
+    el.querySelector('.name').title = r.name;
+    const q = parseQty(r.qty, ss), h = haveOf(r, ss);
+    el.querySelector('.qty').setAttribute('aria-invalid', isNaN(q.v) ? 'true' : 'false');
+    el.querySelector('.have').setAttribute('aria-invalid', isNaN(h.v) ? 'true' : 'false');
+    const parts = [];
+    if (isNaN(q.v)) parts.push('<span class="bad">No reconozco esa cantidad. Usa números o atajos como 3st, 2sb o 64*12.</span>');
+    if (isNaN(h.v)) parts.push('<span class="bad">No reconozco lo que tienes. Usa números o atajos como 3st.</span>');
+    if (r.done && !isNaN(q.v) && q.v > 0) {
+      parts.push(`<span class="ok">Completo</span><span>${nf.format(q.v * state.mult)} items</span>`);
+    } else if (!isNaN(q.v) && q.v > 0) {
+      const need = q.v * state.mult;
+      const have = state.subtract && !isNaN(h.v) && h.v > 0 ? h.v : 0;
+      const left = Math.max(0, need - have);
+      if (!q.plain || state.mult > 1) parts.push(`<span>${nf.format(need)} items</span>`);
+      if (have && !left) parts.push('<span class="ok">Listo, ya tienes todo</span>');
+      else {
+        const slots = Math.ceil(left / ss);
+        parts.push(`<span>${have ? 'faltan ' : ''}${stackText(left, ss)}${slots >= 14 && !isShulkerBox(r.name) ? ` · ${nf1.format(slots / 27)} ${nf1.format(slots / 27) === '1' ? 'caja' : 'cajas'}` : ''}</span>`);
+      }
+      if (have) {
+        const pct = Math.min(100, Math.floor(have / need * 100));
+        parts.push(`<span class="pwrap"><span class="pbar" role="img" aria-label="Avance ${pct} %"><i style="width:${pct}%"></i></span>${pct} %</span>`);
+      }
+      if (isShulkerBox(r.name)) parts.push('<span>No cabe dentro de otra shulker</span>');
+    }
+    const hint = el.querySelector('.hint');
+    hint.innerHTML = parts.join('');
+    hint.hidden = !parts.length;
+    const cb = el.querySelector('.craft');
+    const named = !!r.name.trim();
+    const known = named && hasRecipe(r.name);
+    cb.disabled = !named;
+    cb.classList.toggle('known', known);
+    cb.title = !named ? 'Escribe un material para ver su desglose' : known ? 'Ver desglose de crafteo' : 'Sin receta conocida: puedes crear una';
+  }
+
+  function touched(){
+    if (state.example) { state.example = false; $('exampleBadge').hidden = true; }
+  }
+
+  function compute(){
+    const mult = state.mult;
+    const mats = [];
+    state.rows.forEach(r => {
+      const ss = effSS(r);
+      const q = parseQty(r.qty, ss);
+      if (!(q.v > 0)) return;
+      const need = q.v * mult;
+      const h = haveOf(r, ss);
+      const have = r.done ? need : (state.subtract && h.v > 0 ? h.v : 0);
+      const total = Math.max(0, need - have);
+      mats.push({
+        name: r.name.trim() || 'Sin nombre', ss, total, need, have, done: total === 0,
+        full: Math.floor(total / ss), rem: total % ss, slots: Math.ceil(total / ss),
+        color: r.color, noSb: isShulkerBox(r.name), rowId: r.id
+      });
+    });
+    const pack = mats.filter(m => !m.noSb);
+    const t = {
+      items: mats.reduce((a, m) => a + m.total, 0),
+      need: mats.reduce((a, m) => a + m.need, 0),
+      anyHave: mats.some(m => m.have > 0),
+      full: mats.reduce((a, m) => a + (m.ss > 1 ? m.full : 0), 0),
+      partial: mats.filter(m => m.ss > 1 && m.rem > 0).length,
+      slots: mats.reduce((a, m) => a + m.slots, 0),
+      packSlots: pack.reduce((a, m) => a + m.slots, 0)
+    };
+    t.sbMixed = Math.ceil(t.packSlots / 27);
+    t.sbSep = pack.reduce((a, m) => a + Math.ceil(m.slots / 27), 0);
+    t.sb = state.mode === 'mixed' ? t.sbMixed : t.sbSep;
+    t.dc = Math.ceil(t.slots / 54);
+    t.inv = Math.ceil(t.slots / 36);
+    return { mats, pack, t };
+  }
+
+  function stacksCell(m, html){
+    if (m.ss === 1) return html ? `${nf.format(m.total)} <small>no apila</small>` : `${nf.format(m.total)} sueltos (no apila)`;
+    let s = m.full ? `${nf.format(m.full)} st${m.rem ? ` + ${m.rem}` : ''}` : `${m.rem}`;
+    if (m.ss !== 64) s += html ? ` <small>de ${m.ss}</small>` : ` (stack de ${m.ss})`;
+    return s;
+  }
+
+  function renderResults(){
+    const { mats, pack, t } = compute();
+    $('optSum').textContent = [
+      state.mult > 1 ? `×${nf.format(state.mult)} copias` : 'Una copia',
+      state.showSb ? (state.mode === 'mixed' ? 'shulkers mezcladas' : 'una shulker por material') : 'sin shulkers',
+      state.subtract ? 'restando lo que tienes' : 'sin restar lo que tienes'
+    ].join(' · ');
+    const has = mats.length > 0;
+    lastHas = has;
+    $('mbarStats').innerHTML = has ? (state.showSb
+      ? `<b>${nf.format(t.slots)}</b> espacios · <b>${nf.format(t.sb)}</b> shulkers`
+      : `<b>${nf.format(t.full)}</b> stacks · <b>${nf.format(t.slots)}</b> espacios`) : '';
+    updateMbar();
+    $('empty').hidden = has;
+    $('results').hidden = !has;
+    $('tblWrap').hidden = !has;
+    $('modeField').hidden = !state.showSb;
+    $('listView').hidden = !has; $('craftView').hidden = true;
+    if (!has) { $('sbWrap').hidden = true; $('sbNote').hidden = true; return; }
+
+    const stats = [
+      t.anyHave
+        ? { ic: 'items', n: nf.format(t.items), l: 'Faltan', sub: `de ${nf.format(t.need)} en total` }
+        : { ic: 'items', n: nf.format(t.items), l: 'Items', sub: state.mult > 1 ? `${state.mult} copias incluidas` : 'en total' },
+      { ic: 'stacks', n: nf.format(t.full), l: 'Stacks completos', sub: t.partial ? `+ ${t.partial} incompleto${t.partial > 1 ? 's' : ''}` : 'sin restos' },
+      { ic: 'slots', n: nf.format(t.slots), l: 'Espacios', sub: `${nf.format(t.dc)} cofre${t.dc !== 1 ? 's' : ''} doble${t.dc !== 1 ? 's' : ''}, ${nf.format(t.inv)} inventario${t.inv !== 1 ? 's' : ''}` }
+    ];
+    if (state.showSb) {
+      const lastPct = t.packSlots ? Math.round(((t.packSlots % 27) || 27) / 27 * 100) : 0;
+      stats.push({ ic: 'sb', n: nf.format(t.sb), l: 'Shulkers', hl: true,
+        sub: state.mode === 'mixed' ? (t.sb ? `la última al ${lastPct} %` : 'nada que cargar') : `${pack.length} material${pack.length !== 1 ? 'es' : ''} separado${pack.length !== 1 ? 's' : ''}` });
+    }
+    const st = $('stats');
+    st.classList.toggle('three', stats.length === 3);
+    st.innerHTML = stats.map(s => `<div class="stat${s.hl ? ' hl' : ''}"><div class="lbl">${STAT_ICONS[s.ic] || ''}${s.l}</div><div class="n">${s.n}</div><div class="sub">${s.sub}</div></div>`).join('');
+
+    $('allDone').hidden = !(t.anyHave && t.items === 0);
+    const pr = $('progress');
+    pr.hidden = !t.anyHave;
+    if (t.anyHave) {
+      const got = mats.reduce((a, m) => a + Math.min(m.have, m.need), 0);
+      const pct = t.need ? Math.floor(got / t.need * 100) : 0;
+      const ready = mats.filter(m => m.done).length;
+      pr.innerHTML = `<div class="ptop"><span><strong>Avance ${pct} %</strong> · ${nf.format(got)} de ${nf.format(t.need)} ítems</span><span class="sub">${ready} de ${mats.length} materiales listos</span></div>
+        <div class="pbar" role="img" aria-label="Avance ${pct} %"><i style="width:${pct}%"></i></div>`;
+    }
+
+    const sbCol = state.showSb;
+    $('thead').innerHTML = `<tr><th>Material</th><th class="num">${t.anyHave ? 'Faltan' : 'Cantidad'}</th><th class="num">Stacks</th><th class="num">Espacios</th>${sbCol ? '<th class="num" title="Cajas de shulker">Cajas</th>' : ''}</tr>`;
+    $('tbody').innerHTML = mats.map(m => `<tr class="${m.done ? 'row-done' : ''}">
+      <td><div class="mat"><span class="swatch" style="background:var(--m${m.color})"></span>${iconFor(m.name, m.color)}<button class="linkish" type="button" data-row="${m.rowId}" title="Ver desglose de crafteo">${esc(m.name)}</button></div></td>
+      <td class="num" data-label="${t.anyHave ? 'Faltan' : 'Cantidad'}">${m.done ? '<small>listo</small>' : nf.format(m.total) + (m.have ? `<br><small>de ${nf.format(m.need)}</small>` : '')}</td>
+      <td class="num" data-label="Stacks">${m.done ? '—' : stacksCell(m, true)}</td>
+      <td class="num" data-label="Espacios">${nf.format(m.slots)}</td>
+      ${sbCol ? `<td class="num" data-label="Cajas">${m.noSb ? '<small>no aplica</small>' : state.mode === 'mixed' ? nf1.format(m.slots / 27) : nf.format(Math.ceil(m.slots / 27))}</td>` : ''}
+    </tr>`).join('');
+    $('tfoot').innerHTML = mats.length > 1 ? `<tr><td>Total</td><td class="num" data-label="${t.anyHave ? 'Faltan' : 'Cantidad'}">${nf.format(t.items)}</td><td class="num" data-label="Stacks">${nf.format(t.full)} st</td><td class="num" data-label="Espacios">${nf.format(t.slots)}</td>${sbCol ? `<td class="num" data-label="Cajas">${nf.format(t.sb)}</td>` : ''}</tr>` : '';
+
+    const noSb = mats.filter(m => m.noSb);
+    $('sbNote').hidden = !(sbCol && noSb.length);
+    if (sbCol && noSb.length) $('sbNote').textContent = `${noSb.map(m => m.name).join(', ')}: una caja de shulker no se puede guardar dentro de otra, así que no cuenta en la carga.`;
+
+    $('sbWrap').hidden = !sbCol || !t.packSlots;
+    if (sbCol && pack.length) renderShulkers(pack, t);
+    const craft = state.resView === 'craft';
+    $('listView').hidden = craft; $('craftView').hidden = !craft;
+    if ($('copyBtn').textContent !== 'Copiado') $('copyBtn').textContent = craft ? 'Copiar materiales' : 'Copiar resumen';
+    if (craft) renderCraftView();
+  }
+
+  // Materiales para craftear: total combinado (los sobrantes se comparten)
+  // y, por material de la lista, cuánto aporta cada uno
+  function listCraft(){
+    const roots = new Map(), names = new Map();
+    for (const r of state.rows) {
+      if (!r.name.trim()) continue;
+      const q = rowQty(r); if (!q) continue;
+      const id = resolve(r.name) || rawItem(r.name);
+      roots.set(id, (roots.get(id) || 0) + q);
+      if (!names.has(id)) names.set(id, r.name.trim());
+    }
+    const all = breakdown([...roots], new Set(), false, state.wood);
+    const usedRaw = new Map(), usedStep = new Map();
+    const add = (map, id, who, n) => { if (!map.has(id)) map.set(id, []); map.get(id).push([who, n]); };
+    for (const [id, q] of roots) {
+      const b1 = breakdown([[id, q]], new Set(), false, state.wood);
+      for (const x of b1.raw) add(usedRaw, x.id, id, x.n);
+      for (const st of b1.steps) if (!st.root) add(usedStep, st.id, id, st.n);
+    }
+    return { all, roots, names, usedRaw, usedStep };
+  }
+  function usedText(entries, roots, names, selfId){
+    const parts = (entries || []).filter(([who]) => who !== selfId).sort((a, b) => b[1] - a[1])
+      .map(([who, n]) => `${esc(names.get(who) || iname(who))} ${nf.format(n)}`);
+    if (selfId && roots.has(selfId)) parts.unshift(`en la lista ${nf.format(roots.get(selfId))}`);
+    return parts.length ? `<span class="used">${parts.slice(0, 5).join(' · ')}${parts.length > 5 ? ' · …' : ''}</span>` : '';
+  }
+  function renderCraftView(){
+    const { all, roots, names, usedRaw, usedStep } = listCraft();
+    const raws = gotLast(all.raw.map(x => ({ ...x })));
+    const slots = raws.reduce((a, x) => a + Math.ceil(x.n / detectSS(iname(x.id))), 0);
+    const gotN = raws.filter(x => state.gathered[x.id]).length;
+    const inter = all.steps.filter(st => usedStep.has(st.id));
+    const unknown = raws.filter(x => x.id.startsWith('raw:'));
+    $('woodSel').value = state.wood;
+    $('cvBody').innerHTML = `${unknown.length ? `<div class="note unknown">
+        <p><strong>${unknown.length === 1 ? 'Hay 1 ítem' : `Hay ${unknown.length} ítems`} sin receta conocida.</strong> Se cuentan como material bruto. Si se craftean, crea su receta para que el cálculo baje hasta sus materiales.</p>
+        <div class="chips">${unknown.map(x => `<button class="chip" type="button" data-newrecipe="${esc(x.id)}" data-qty="${x.n}">${iconFor(iname(x.id))}Crear receta: ${esc(iname(x.id))}</button>`).join('')}</div>
+      </div>` : ''}<section aria-labelledby="cvRawH" class="cv">
+        <h3 id="cvRawH">Materiales brutos<span class="prog">${gotN} de ${raws.length} juntados · ${nf.format(slots)} espacios, ${nf1.format(slots / 27)} cajas</span></h3>
+        <p class="fine">Lo que hay que juntar para craftear toda la lista${state.subtract ? ', descontando lo que ya tienes' : ''}. Debajo de cada uno se ve para qué se usa.</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Material</th><th class="num">Cantidad</th><th class="num">Stacks</th></tr></thead>
+          <tbody>${raws.map(x => `<tr class="${state.gathered[x.id] ? 'got' : ''}">
+            <td><label class="gcheck"><input type="checkbox" data-gather="${esc(x.id)}" ${state.gathered[x.id] ? 'checked' : ''}>${iconFor(iname(x.id))}<span><span class="gname">${esc(iname(x.id))}</span>${x.id.startsWith('raw:') ? ' <small class="tag-unknown">sin receta</small>' : ''}${usedText(usedRaw.get(x.id), roots, names, roots.has(x.id) ? x.id : null)}${equivNote(x.id, x.n)}</span></label></td>
+            <td class="num">${nf.format(x.n)}</td>
+            <td class="num">${stacksOf(x.id, x.n)}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </section>
+      ${inter.length ? `<section aria-labelledby="cvInterH" class="cv">
+        <h3 id="cvInterH">Piezas intermedias</h3>
+        <p class="fine">Lo que hay que craftear antes, sumando todo lo que pide la lista.</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Pieza</th><th class="num">Total</th><th class="num">Crafteos</th></tr></thead>
+          <tbody>${inter.map(st => `<tr>
+            <td><span class="mat">${iconFor(iname(st.id))}<span>${esc(iname(st.id))}${usedText(usedStep.get(st.id), roots, names, st.id)}</span></span></td>
+            <td class="num">${nf.format(st.n)}${st.left ? `<br><small>sobran ${nf.format(st.left)}</small>` : ''}</td>
+            <td class="num">${nf.format(st.crafts)}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </section>` : '<p class="fine">Nada de la lista necesita piezas intermedias.</p>'}`;
+  }
+
+  function craftText(){
+    const { all, roots, names, usedRaw, usedStep } = listCraft();
+    const L = activeList();
+    const lines = [`Materiales para craftear: ${L ? L.name : 'lista'}`, ''];
+    for (const x of all.raw) lines.push(`${state.gathered[x.id] ? '[x]' : '[ ]'} ${iname(x.id)}: ${nf.format(x.n)} (${stacksOf(x.id, x.n)})`);
+    const inter = all.steps.filter(st => usedStep.has(st.id));
+    if (inter.length) {
+      lines.push('', 'Piezas intermedias:');
+      for (const st of inter) lines.push(`- ${iname(st.id)}: ${nf.format(st.n)} (${nf.format(st.crafts)} crafteos)`);
+    }
+    return lines.join('\n');
+  }
+
+  function renderShulkers(pack, t){
+    const boxes = [];
+    let done = false;
+    const newBox = label => { if (boxes.length >= VIZ_LIMIT) { done = true; return null; } const b = { label, slots: [] }; boxes.push(b); return b; };
+    if (state.mode === 'mixed') {
+      let cur = null;
+      for (const m of pack) {
+        let left = m.total;
+        while (left > 0 && !done) {
+          if (!cur || cur.slots.length === 27) { cur = newBox(''); if (!cur) break; }
+          const amt = Math.min(m.ss, left); left -= amt;
+          cur.slots.push({ c: m.color, f: amt / m.ss, name: m.name, amt });
+        }
+        if (done) break;
+      }
+    } else {
+      for (const m of pack) {
+        let left = m.total, cur = null;
+        while (left > 0 && !done) {
+          if (!cur || cur.slots.length === 27) { cur = newBox(m.name); if (!cur) break; }
+          const amt = Math.min(m.ss, left); left -= amt;
+          cur.slots.push({ c: m.color, f: amt / m.ss, name: m.name, amt });
+        }
+        if (done) break;
+      }
+    }
+    $('sbCaption').textContent = state.mode === 'mixed' ? 'Llenado en orden de la lista' : 'Cada material en sus propias cajas';
+    $('sbGrid').innerHTML = boxes.map((b, k) => {
+      const cells = [];
+      for (let s = 0; s < 27; s++) {
+        const it = b.slots[s];
+        cells.push(it
+          ? `<div class="slot" title="${esc(it.name)}: ${it.amt}"><i style="--f:${it.f.toFixed(3)};background:var(--m${it.c})"></i></div>`
+          : '<div class="slot"></div>');
+      }
+      const right = b.label ? esc(b.label) : `${b.slots.length}/27`;
+      return `<div class="sb"><div class="sb-head"><span>#${k + 1}</span><span class="sb-name">${right}</span></div><div class="sb-body">${cells.join('')}</div></div>`;
+    }).join('');
+    const more = t.sb - boxes.length;
+    $('sbMore').hidden = more <= 0;
+    if (more > 0) $('sbMore').textContent = `Se muestran ${VIZ_LIMIT} cajas (un inventario lleno de shulkers). Faltan ${nf.format(more)} más.`;
+  }
+
+  function summaryText(){
+    const { mats, t } = compute();
+    if (!mats.length) return 'Lista vacía';
+    const lines = [`${activeList() ? activeList().name : 'Materiales'}${state.mult > 1 ? ` (x${state.mult} copias)` : ''}`];
+    for (const m of mats) lines.push(m.done ? `- ${m.name}: listo (${nf.format(m.need)})` : `- ${m.name}: ${nf.format(m.total)}${m.have ? ` de ${nf.format(m.need)}` : ''} = ${stacksCell(m, false)}, ${nf.format(m.slots)} espacios`);
+    lines.push('');
+    lines.push(`Total${t.anyHave ? ' que falta' : ''}: ${nf.format(t.items)} items, ${nf.format(t.full)} stacks completos${t.partial ? ` + ${t.partial} incompletos` : ''}, ${nf.format(t.slots)} espacios`);
+    lines.push(`Equivale a ${nf.format(t.dc)} cofres dobles o ${nf.format(t.inv)} inventarios`);
+    if (state.showSb) lines.push(`Shulkers: ${nf.format(t.sb)} (${state.mode === 'mixed' ? 'mezclado' : 'una por material'})`);
+    return lines.join('\n');
+  }
+
+  // Pegado de listas
+  const UNIT = '(?:sb|shulkers?|st|stacks?|dc|s)';
+  const QTY = `\\d[\\d.,]*\\s*${UNIT}?(?:\\s*[+*]\\s*\\d[\\d.,]*\\s*${UNIT}?)*`;
+  const RE_NAME_QTY = new RegExp(`^(.+?)(?:\\s*[:=\\t,;\\-–]\\s*|\\s+[x×]\\s*|\\s+)(${QTY})$`, 'i');
+  const RE_QTY_NAME = new RegExp(`^(\\d[\\d.,]*(?:\\s*${UNIT})?)\\s*[x×]?\\s+(.+)$`, 'i');
+  const HEADER = /^(item|items|material|materiales|objeto|objetos|bloque|bloques|name|nombre)$/;
+
+  function parsePaste(text){
+    const out = []; let skipped = 0;
+    for (let line of text.split(/\r?\n/)) {
+      line = line.trim();
+      if (!line || /^[+\-=|_\s]*$/.test(line)) continue;
+      let name, qty, have = '';
+      if (line.startsWith('|')) {
+        const cols = line.split('|').map(s => s.trim()).filter(s => s !== '');
+        if (cols.length < 2) { skipped++; continue; }
+        name = cols[0];
+        if (HEADER.test(norm(name))) continue;
+        const idx = state.litCol === 'missing' && cols.length > 2 ? 2 : 1;
+        qty = cols[idx].replace(/[^\d]/g, '');
+        if (!qty) { skipped++; continue; }
+        if (qty === '0') continue;
+        if (idx === 1 && cols.length > 3) { const a = cols[3].replace(/[^\d]/g, ''); if (a && a !== '0') have = a; }
+      } else {
+        let m = line.match(RE_NAME_QTY);
+        if (m) { name = m[1]; qty = m[2]; }
+        else if ((m = line.match(RE_QTY_NAME))) { qty = m[1]; name = m[2]; }
+        else { skipped++; continue; }
+      }
+      name = name.replace(/^(\d+[.)]\s+|[-*•·]\s*)/, '').replace(/[\s:=,;\-–]+$/, '').trim();
+      if (!name) { skipped++; continue; }
+      out.push({ name, qty: qty.replace(/\s+/g, ''), have });
+    }
+    const map = new Map();
+    for (const it of out) {
+      const k = norm(it.name);
+      if (map.has(k)) { const m = map.get(k); m.qty += '+' + it.qty; if (it.have) m.have = m.have ? `${m.have}+${it.have}` : it.have; }
+      else map.set(k, { ...it });
+    }
+    return { items: [...map.values()], skipped };
+  }
+
+  function applyPaste(replace){
+    const { items, skipped } = parsePaste($('pasteText').value);
+    const status = $('pasteStatus');
+    if (!items.length) { status.textContent = 'No encontré materiales con cantidad. Revisa que cada línea tenga un nombre y un número.'; return; }
+    const prev = snapshot();
+    touched();
+    const onlyBlank = state.rows.every(r => !r.name.trim() && !r.qty.trim());
+    if (replace || onlyBlank) {
+      state.rows = items.map(it => mk(it.name, it.qty, 'auto', undefined, it.have));
+    } else {
+      state.rows = state.rows.filter(r => r.name.trim() || r.qty.trim());
+      for (const it of items) {
+        const ex = state.rows.find(r => norm(r.name) === norm(it.name));
+        if (ex) {
+          ex.qty = ex.qty.trim() ? `${ex.qty}+${it.qty}` : it.qty;
+          if (it.have) ex.have = (ex.have || '').trim() ? `${ex.have}+${it.have}` : it.have;
+        } else state.rows.push(mk(it.name, it.qty, 'auto', undefined, it.have));
+      }
+    }
+    status.textContent = `Listo: ${items.length} material${items.length !== 1 ? 'es' : ''} ${replace ? 'cargados' : 'agregados'}.${skipped ? ` ${skipped} línea${skipped !== 1 ? 's' : ''} sin reconocer.` : ''}`;
+    $('pasteText').value = '';
+    if (state.order === 'desc') sortRows();
+    renderRows(); renderResults(); save();
+    if (replace && !onlyBlank) showUndo('Lista reemplazada', prev);
+  }
+
+  function addRow(){
+    touched();
+    state.rows.push(mk());
+    renderRows(); save();
+    const last = state.rows[state.rows.length - 1];
+    const el = $('name-' + last.id);
+    if (el) el.focus();
+  }
+
+  // Deshacer
+  const snapshot = () => state.rows.map(r => ({ ...r }));
+  let undoRows = null, undoTimer = null;
+  function showUndo(msg, prev){
+    undoRows = Array.isArray(prev) ? (() => { state.rows = prev; renderRows(); renderResults(); save(); }) : prev;
+    $('toastMsg').textContent = msg;
+    $('toast').hidden = false;
+    clearTimeout(undoTimer);
+    undoTimer = setTimeout(hideUndo, 7000);
+  }
+  function hideUndo(){ $('toast').hidden = true; undoRows = null; }
+  $('toastUndo').addEventListener('click', () => {
+    if (!undoRows) return;
+    const fn = undoRows;
+    hideUndo();
+    fn();
+  });
+
+  // Barra de resumen en pantallas angostas, visible solo mientras el resultado no está a la vista
+  let lastHas = false, resVisible = true;
+  const resSec = $('h-res').closest('section');
+  const mq = window.matchMedia ? window.matchMedia('(max-width: 920px)') : { matches: false };
+  function updateMbar(){
+    const show = !!mq.matches && !resVisible && lastHas;
+    $('mbar').hidden = !show;
+    document.body.classList.toggle('has-bar', show);
+  }
+  try { new IntersectionObserver(es => { resVisible = es[0].isIntersecting; updateMbar(); }, { threshold: 0.02 }).observe(resSec); } catch (e) {}
+  if (mq.addEventListener) mq.addEventListener('change', updateMbar);
+  $('mbarGo').addEventListener('click', () => {
+    const smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    resSec.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  });
+
+  // Abrir el desglose desde la tabla de resultados
+  $('tbody').addEventListener('click', e => {
+    const b = e.target.closest('[data-row]'); if (!b) return;
+    const r = state.rows.find(x => x.id === b.dataset.row);
+    if (r) openForRow(r);
+  });
+
+  // Sugerencias de nombres que el desglose reconoce
+  function fillNames(){
+    const names = new Set();
+    for (const d of DATA) names.add(d[1]);
+    for (const [wid, wname] of WOODS) {
+      ensureWood(wid, wname);
+      for (const f of ['planks','log','stairs','slab','fence','gate','door','trapdoor','sign','hanging']) names.add(ITEMS.get(`w:${wid}:${f}`).name);
+    }
+    for (const [c] of COLORS) for (const pre of ['Hormigón', 'Hormigón en polvo', 'Vidrio', 'Panel de vidrio']) names.add(`${pre} ${c}`);
+    for (const [wid] of WOODS) for (const f of ['boat', 'chestboat']) names.add(ITEMS.get(`w:${wid}:${f}`).name);
+    for (const [, , label, , , isTool] of TOOL_KINDS) for (const [mid, , mname] of TOOL_MATS) {
+      if (isTool ? mid !== 'leather' : (mid !== 'planks' && mid !== 'cobble')) names.add(`${label} de ${mname}`);
+    }
+    $('itemNames').innerHTML = [...names].sort((a, b) => a.localeCompare(b, 'es')).map(n => `<option value="${esc(n)}"></option>`).join('');
+  }
+  fillNames();
+
+  // ================= Varias listas =================
+  const byName = (a, b) => a.name.localeCompare(b.name, 'es');
+  function isReadOnly(){ const L = activeList(); return !!(L && L.shared && canWrite === false); }
+  function setActive(id){
+    const L = findList(id); if (!L) return;
+    syncActive();
+    state.activeId = id;
+    if (!L.rows.length) L.rows.push(mk());
+    state.rows = L.rows; state.mult = L.mult; state.gathered = L.gathered;
+    colorSeq = state.rows.length;
+    state.example = false;
+    if (dlg.open) dlg.close();
+    $('mult').value = state.mult;
+    if (state.order === 'desc') sortRows();
+    renderListBar(); renderRows(); renderResults(); save();
+  }
+  function renderListBar(){
+    const opt = L => `<option value="${esc(L.id)}" ${L.id === state.activeId ? 'selected' : ''}>${esc(L.name)}</option>`;
+    let html = state.lists.map(opt).join('');
+    if (shared.size) html = `<optgroup label="En este navegador">${html}</optgroup><optgroup label="Compartidas">${[...shared.values()].sort(byName).map(opt).join('')}</optgroup>`;
+    $('listSel').innerHTML = html;
+    $('listSel').value = state.activeId;
+    const L = activeList(), isSh = !!(L && L.shared), ro = isReadOnly();
+    $('listShare').hidden = !db;
+    $('listShare').textContent = isSh ? 'Dejar de compartir' : 'Compartir';
+    $('listShare').disabled = ro;
+    $('listRename').disabled = ro;
+    $('listDelete').hidden = isSh;
+    $('listDelete').disabled = state.lists.length <= 1;
+    $('matFs').disabled = ro;
+    $('mult').disabled = ro;
+    const note = $('shareNote');
+    if (!note.classList.contains('bad')) note.textContent = isSh
+      ? (ro ? 'Lista compartida. Puedes verla, pero no editarla.' : 'Lista compartida: la ve y la edita quien abra esta página con sesión iniciada.')
+      : '';
+  }
+  function setShareStatus(msg){
+    const note = $('shareNote');
+    note.classList.toggle('bad', !!msg);
+    if (msg) note.textContent = msg; else renderListBar();
+  }
+
+  $('listSel').addEventListener('change', e => setActive(e.target.value));
+  $('listNew').addEventListener('click', () => {
+    syncActive();
+    const L = newList(`Lista ${state.lists.length + 1}`);
+    state.lists.push(L);
+    setActive(L.id);
+    startRename();
+  });
+  function startRename(){
+    const L = activeList(); if (!L) return;
+    const inp = $('listName');
+    inp.value = L.name; inp.hidden = false; $('listSel').hidden = true;
+    inp.focus(); inp.select();
+  }
+  function endRename(commit){
+    const inp = $('listName');
+    if (inp.hidden) return;
+    const L = activeList();
+    if (commit && L && inp.value.trim()) { L.name = inp.value.trim().slice(0, 60); save(); }
+    inp.hidden = true; $('listSel').hidden = false;
+    renderListBar();
+  }
+  $('listRename').addEventListener('click', startRename);
+  $('listName').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); endRename(true); $('listRename').focus(); }
+    if (e.key === 'Escape') { e.preventDefault(); endRename(false); $('listRename').focus(); }
+  });
+  $('listName').addEventListener('blur', () => endRename(true));
+  $('listDelete').addEventListener('click', () => {
+    if (state.lists.length <= 1) return;
+    syncActive();
+    const idx = state.lists.findIndex(L => L.id === state.activeId);
+    if (idx < 0) return;
+    const [gone] = state.lists.splice(idx, 1);
+    setActive(state.lists[Math.max(0, idx - 1)].id);
+    showUndo(`Se borró la lista ${gone.name}`, () => { state.lists.splice(idx, 0, gone); setActive(gone.id); });
+  });
+
+  // ================= Listas compartidas (base de datos de la página) =================
+  let db = null, canWrite = null, loadTimer = null;
+  const pendingShare = new Map(), lastBody = new Map(), writing = new Set(), dirty = new Set();
+  function queueShare(L){
+    const body = JSON.stringify(serList(L));
+    if (lastBody.get(L.id) === body) return;
+    clearTimeout(pendingShare.get(L.id));
+    pendingShare.set(L.id, setTimeout(() => { pendingShare.delete(L.id); writeShare(L.id); }, 700));
+  }
+  async function writeShare(id){
+    const L = shared.get(id);
+    if (!L || !db) return;
+    if (writing.has(id)) { dirty.add(id); return; }
+    const body = JSON.stringify(serList(L));
+    if (lastBody.get(id) === body) return;
+    writing.add(id);
+    lastBody.set(id, body);
+    try {
+      await db.collection('shared').doc(id).set({ ...JSON.parse(body), updatedAt: Date.now() });
+      if ($('shareNote').classList.contains('bad')) setShareStatus('');
+    } catch (e) {
+      lastBody.delete(id);
+      setShareStatus(e && e.code === 'quota_exceeded' ? 'La página llegó a su límite de datos guardados; borra alguna lista compartida.' : 'No se pudieron guardar los cambios en la lista compartida.');
+    }
+    writing.delete(id);
+    if (dirty.delete(id)) writeShare(id);
+  }
+  function onShared(snap){
+    clearTimeout(loadTimer);
+    if ($('shareNote').classList.contains('bad') && !snap.metadata.fromCache) setShareStatus('');
+    const seen = new Set();
+    let activeChanged = false;
+    for (const d of snap.docs) {
+      const v = d.data();
+      if (!v) continue;
+      seen.add(d.id);
+      const L = { id: d.id, name: String(v.name || 'Lista compartida').slice(0, 60), rows: cleanRows(v.rows), mult: cleanMult(v.mult), gathered: cleanGathered(v.gathered), shared: true };
+      const body = JSON.stringify(serList(L));
+      const cur = shared.get(d.id);
+      if (cur && JSON.stringify(serList(cur)) === body) continue;
+      // Un cambio local que todavía no se guarda gana sobre lo que llega
+      if (pendingShare.has(d.id) || writing.has(d.id)) continue;
+      lastBody.set(d.id, body);
+      shared.set(d.id, L);
+      if (state.activeId === d.id) {
+        if (!L.rows.length) L.rows.push(mk());
+        state.rows = L.rows; state.mult = L.mult; state.gathered = L.gathered;
+        activeChanged = true;
+      }
+    }
+    for (const id of [...shared.keys()]) {
+      if (seen.has(id)) continue;
+      const gone = shared.get(id);
+      shared.delete(id);
+      if (state.activeId === id) {
+        const copy = { ...newList(gone.name), rows: gone.rows, mult: gone.mult, gathered: gone.gathered };
+        state.lists.push(copy);
+        state.activeId = copy.id;
+        activeChanged = true;
+        setShareStatus('Esta lista se dejó de compartir. Quedó una copia en tu navegador.');
+      }
+    }
+    if (wantShared && shared.has(wantShared)) { const w = wantShared; wantShared = null; setActive(w); return; }
+    renderListBar();
+    if (activeChanged) {
+      $('mult').value = state.mult;
+      renderRows(); renderResults();
+      if (dlg.open && ds && !ds.ed) renderDlg();
+    }
+  }
+  $('listShare').addEventListener('click', async () => {
+    if (!db) return;
+    syncActive();
+    const L = activeList(); if (!L) return;
+    const btn = $('listShare'); btn.disabled = true;
+    if (!L.shared) {
+      try {
+        const body = serList(L);
+        await db.collection('shared').doc(L.id).set({ ...body, updatedAt: Date.now() });
+        lastBody.set(L.id, JSON.stringify(body));
+        state.lists = state.lists.filter(x => x.id !== L.id);
+        if (!state.lists.length) state.lists.push(newList('Mi lista'));
+        shared.set(L.id, { ...L, shared: true });
+        state.activeId = L.id;
+        save(); renderListBar();
+      } catch (e) {
+        setShareStatus(e && e.code === 'quota_exceeded' ? 'La página llegó a su límite de datos guardados.' : 'No se pudo compartir la lista. Puede que no tengas permiso para editar esta página.');
+      }
+    } else {
+      const copy = { ...newList(L.name), rows: serRows(L.rows).map(r => mk(r.name, r.qty, r.ss, r.color, r.have)), mult: L.mult, gathered: { ...L.gathered } };
+      try {
+        await db.collection('shared').doc(L.id).delete();
+        shared.delete(L.id);
+        state.lists.push(copy);
+        setActive(copy.id);
+        setShareStatus('');
+      } catch (e) {
+        setShareStatus('No se pudo dejar de compartir. Puede que no tengas permiso para editar esta página.');
+      }
+    }
+    btn.disabled = isReadOnly();
+  });
+  (async () => {
+    try {
+      if (!window.claude || typeof window.claude.use !== 'function') return;
+      db = await window.claude.use('db');
+      if (!db) return;
+      try { const u = await window.claude.use('user'); canWrite = u && u.can ? await u.can('data.write') : null; } catch (e) { canWrite = null; }
+      renderListBar();
+      loadTimer = setTimeout(() => setShareStatus('Las listas compartidas todavía no cargan.'), 10000);
+      db.collection('shared').onSnapshot(onShared, () => { clearTimeout(loadTimer); setShareStatus('No se pudieron cargar las listas compartidas.'); });
+    } catch (e) {}
+  })();
+
+  // ================= Importar .litematic =================
+  function readNBT(buf){
+    const dv = new DataView(buf), u8 = new Uint8Array(buf), td = new TextDecoder();
+    let p = 0;
+    const str = () => { const n = dv.getUint16(p); p += 2; const v = td.decode(u8.subarray(p, p + n)); p += n; return v; };
+    function payload(t){
+      switch (t) {
+        case 1: return dv.getInt8(p++);
+        case 2: { const v = dv.getInt16(p); p += 2; return v; }
+        case 3: { const v = dv.getInt32(p); p += 4; return v; }
+        case 4: { const v = dv.getBigInt64(p); p += 8; return v; }
+        case 5: { const v = dv.getFloat32(p); p += 4; return v; }
+        case 6: { const v = dv.getFloat64(p); p += 8; return v; }
+        case 7: { const n = dv.getInt32(p); p += 4; const v = u8.subarray(p, p + n); p += n; return v; }
+        case 8: return str();
+        case 9: { const et = dv.getUint8(p++); const n = dv.getInt32(p); p += 4; const a = []; for (let i = 0; i < n; i++) a.push(payload(et)); return a; }
+        case 10: { const o = {}; for (;;) { const tt = dv.getUint8(p++); if (tt === 0) break; const k = str(); o[k] = payload(tt); } return o; }
+        case 11: { const n = dv.getInt32(p); p += 4; const a = new Int32Array(n); for (let i = 0; i < n; i++) { a[i] = dv.getInt32(p); p += 4; } return a; }
+        case 12: { const n = dv.getInt32(p); p += 4; const a = new Uint32Array(n * 2); for (let i = 0; i < n; i++) { a[2 * i + 1] = dv.getUint32(p); a[2 * i] = dv.getUint32(p + 4); p += 8; } return a; }
+        default: throw new Error('nbt');
+      }
+    }
+    const t = dv.getUint8(p++); str();
+    return payload(t);
+  }
+  const SKIP_BLOCKS = new Set(['air','cave_air','void_air','water','lava','bubble_column','piston_head','moving_piston','fire','soul_fire','nether_portal','end_portal','end_gateway','light','structure_void','barrier']);
+  function blockItem(entry){
+    let n = String(entry && entry.Name || '').replace(/^minecraft:/, '');
+    const pr = (entry && entry.Properties) || {};
+    if (!n || SKIP_BLOCKS.has(n)) return null;
+    if (pr.half === 'upper' || pr.part === 'head') return null;
+    let mult = 1;
+    if (pr.type === 'double' && /slab/.test(n)) mult = 2;
+    if (pr.candles) mult = +pr.candles || 1;
+    if (pr.pickles) mult = +pr.pickles || 1;
+    if (n === 'redstone_wire') n = 'redstone';
+    else if (n === 'tripwire') n = 'string';
+    else if (n.startsWith('potted_')) n = 'flower_pot';
+    else if (/_cauldron$/.test(n)) n = 'cauldron';
+    n = n.replace(/(^|_)wall_(?=(torch|sign|hanging_sign|banner|head|skull|fan))/, '$1');
+    const words = n.replace(/_/g, ' ');
+    const id = resolve(words);
+    const name = id && ITEMS.get(id) && !id.startsWith('raw:') ? ITEMS.get(id).name : cap(words);
+    return { name, mult };
+  }
+  async function importLitematic(file){
+    const status = $('pasteStatus');
+    status.textContent = 'Leyendo el esquema…';
+    try {
+      if (typeof DecompressionStream === 'undefined') throw new Error('gzip');
+      const buf = await new Response(file.stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+      const root = readNBT(buf);
+      const regions = root && root.Regions;
+      if (!regions || typeof regions !== 'object') throw new Error('regions');
+      const counts = new Map();
+      let total = 0;
+      for (const reg of Object.values(regions)) {
+        const pal = reg && reg.BlockStatePalette, W = reg && reg.BlockStates, size = reg && reg.Size;
+        if (!Array.isArray(pal) || !W || !size) continue;
+        const vol = Math.abs(size.x * size.y * size.z);
+        const bits = Math.max(2, Math.ceil(Math.log2(pal.length)));
+        const mask = (1 << bits) - 1;
+        const cnt = new Float64Array(pal.length);
+        for (let i = 0; i < vol; i++) {
+          const off = i * bits, w = Math.floor(off / 32), sh = off % 32;
+          let v = W[w] >>> sh;
+          if (sh + bits > 32) v |= W[w + 1] << (32 - sh);
+          v &= mask;
+          if (v < cnt.length) cnt[v]++;
+        }
+        pal.forEach((entry, idx) => {
+          if (!cnt[idx]) return;
+          const it = blockItem(entry);
+          if (!it) return;
+          const n = cnt[idx] * it.mult;
+          counts.set(it.name, (counts.get(it.name) || 0) + n);
+          total += n;
+        });
+      }
+      if (!counts.size) { status.textContent = 'El esquema no tiene bloques que se puedan juntar.'; return; }
+      const meta = root.Metadata || {};
+      const name = String(meta.Name || file.name.replace(/\.litematic$/i, '') || 'Esquema').slice(0, 60);
+      const rows = [...counts].sort((a, b) => b[1] - a[1]).map(([nm, q]) => mk(nm, String(q)));
+      syncActive();
+      const cur = activeList();
+      const blank = cur && !cur.shared && state.rows.every(r => !r.name.trim() && !r.qty.trim());
+      if (blank) { cur.name = name; cur.rows = rows; cur.gathered = {}; cur.mult = 1; setActive(cur.id); }
+      else { const L = { ...newList(name), rows }; state.lists.push(L); setActive(L.id); }
+      status.textContent = `Importé ${counts.size} tipos de bloque (${nf.format(total)} bloques) en la lista "${name}". El agua, el aire y la parte de arriba de puertas y camas no se cuentan.`;
+    } catch (e) {
+      status.textContent = e && e.message === 'gzip'
+        ? 'Este navegador no puede abrir archivos .litematic. Prueba con Chrome, Edge, Firefox o Safari actualizados.'
+        : 'No pude leer ese archivo. Revisa que sea un .litematic guardado con Litematica.';
+    }
+  }
+  $('litImport').addEventListener('click', () => $('litFile').click());
+  $('litFile').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (f) importLitematic(f);
+    e.target.value = '';
+  });
+
+  // ================= Calculadora rápida =================
+  const QC_KEY = 'mc-stack-calc-qc';
+  const qc = (() => { try { const d = JSON.parse(localStorage.getItem(QC_KEY) || '{}'); return { expr: String(d.expr || ''), ss: [64, 16, 1].includes(d.ss) ? d.ss : 64, hist: Array.isArray(d.hist) ? d.hist.filter(x => typeof x === 'string').slice(0, 8) : [] }; } catch (e) { return { expr: '', ss: 64, hist: [] }; } })();
+  const qcSave = () => { try { localStorage.setItem(QC_KEY, JSON.stringify(qc)); } catch (e) {} };
+  // Suma, resta, multiplicación, división y paréntesis, con atajos st, sb y dc
+  function evalExpr(str, ss){
+    let s = norm(str).replace(/\s+/g, '');
+    if (!s) return null;
+    s = s.replace(/(\d)[.,](?=\d{3}(?!\d))/g, '$1').replace(/,/g, '.').replace(/(\d|\))x(?=[\d(])/g, '$1*').replace(/×/g, '*').replace(/÷/g, '/').replace(/[−–]/g, '-');
+    let i = 0;
+    const peek = () => s[i];
+    function num(){
+      const m = s.slice(i).match(/^(\d+(?:\.\d+)?)(sb|shulkers?|dc|cd|st|stacks?|s)?/);
+      if (!m) throw new Error('syntax');
+      i += m[0].length;
+      const u = m[2] || '';
+      return parseFloat(m[1]) * (/^(sb|shulker)/.test(u) ? 27 * ss : (u === 'dc' || u === 'cd') ? 54 * ss : u ? ss : 1);
+    }
+    function factor(){
+      if (peek() === '-') { i++; return -factor(); }
+      if (peek() === '(') { i++; const v = expr(); if (peek() !== ')') throw new Error('syntax'); i++; return v; }
+      return num();
+    }
+    function term(){
+      let v = factor();
+      while (peek() === '*' || peek() === '/') { const op = s[i++]; const r = factor(); if (op === '/' && r === 0) throw new Error('div0'); v = op === '*' ? v * r : v / r; }
+      return v;
+    }
+    function expr(){
+      let v = term();
+      while (peek() === '+' || peek() === '-') { const op = s[i++]; const r = term(); v = op === '+' ? v + r : v - r; }
+      return v;
+    }
+    const v = expr();
+    if (i !== s.length) throw new Error('syntax');
+    return v;
+  }
+  function qcCompute(){
+    let v;
+    try { v = evalExpr(qc.expr, qc.ss); }
+    catch (e) { return { err: e.message === 'div0' ? 'No se puede dividir por cero.' : 'Revisa el cálculo: usa números, + − × ÷, paréntesis y atajos como 3st o 2sb.' }; }
+    if (v === null) return { empty: true };
+    if (!isFinite(v) || Math.abs(v) > 1e12) return { err: 'El número es demasiado grande.' };
+    if (v < 0) return { err: `El resultado es negativo (${nf1.format(v)}).` };
+    return { v, n: Math.ceil(v - 1e-9) };
+  }
+  function renderQc(){
+    const r = qcCompute(), ss = qc.ss;
+    $('qcErr').textContent = r.err || '';
+    $('qcExpr').setAttribute('aria-invalid', r.err ? 'true' : 'false');
+    if (r.err || r.empty) {
+      $('qcOut').innerHTML = r.empty ? '<p class="fine">Escribe un cálculo. Por ejemplo <code>3sb + 20</code>, <code>(5st + 12) * 4</code> o <code>3456 / 4</code> para repartir entre cuatro.</p>' : '';
+    } else {
+      const n = r.n, slots = Math.ceil(n / ss), boxes = slots / 27;
+      const frac = Math.abs(r.v - Math.round(r.v)) > 1e-9;
+      $('qcOut').innerHTML = `<div class="qc-big"><span class="n">${nf.format(frac ? Math.round(r.v * 10) / 10 : r.v)}</span><span class="u">ítems${frac ? `, se redondea a ${nf.format(n)}` : ''}</span></div>
+        <div class="qc-grid">
+          <div><div class="lbl">${STAT_ICONS.stacks}Stacks</div><div class="v">${stackText(n, ss)}</div><div class="s">${nf.format(slots)} espacio${slots !== 1 ? 's' : ''}</div></div>
+          <div><div class="lbl">${STAT_ICONS.sb}Shulkers</div><div class="v">${nf.format(Math.ceil(boxes))} caja${Math.ceil(boxes) !== 1 ? 's' : ''}</div><div class="s">${Math.floor(boxes) === Math.ceil(boxes) ? 'todas llenas' : Math.floor(boxes) ? `${nf.format(Math.floor(boxes))} llena${Math.floor(boxes) !== 1 ? 's' : ''} y 1 con ${slots % 27} espacio${slots % 27 !== 1 ? 's' : ''}` : `1 con ${slots} espacio${slots !== 1 ? 's' : ''}`}</div></div>
+          <div><div class="lbl">${STAT_ICONS.slots}Cofres dobles</div><div class="v">${nf.format(Math.ceil(slots / 54))}</div><div class="s">54 espacios cada uno</div></div>
+          <div><div class="lbl">${STAT_ICONS.items}Inventarios</div><div class="v">${nf.format(Math.ceil(slots / 36))}</div><div class="s">36 espacios cada uno</div></div>
+        </div>`;
+    }
+    $('qcHist').innerHTML = qc.hist.map((h, i) => `<button type="button" data-h="${i}" title="Usar de nuevo">${esc(h)}</button>`).join('');
+    $('qcAdd').disabled = !!(r.err || r.empty) || isReadOnly();
+  }
+  function qcRemember(){
+    const e = qc.expr.trim();
+    if (!e || qcCompute().err) return;
+    qc.hist = [e, ...qc.hist.filter(x => x !== e)].slice(0, 8);
+    qcSave(); renderQc();
+  }
+  function qcToggle(open){
+    const panel = $('qc');
+    panel.hidden = !open;
+    $('qcOpen').setAttribute('aria-expanded', String(open));
+    if (open) { renderQc(); $('qcExpr').focus(); }
+  }
+  $('qcExpr').value = qc.expr;
+  $('qcSs' + qc.ss).checked = true;
+  $('qcOpen').addEventListener('click', () => qcToggle($('qc').hidden));
+  $('qcClose').addEventListener('mousedown', e => e.preventDefault());
+  $('qcClose').addEventListener('click', () => { qcToggle(false); $('qcOpen').focus(); });
+  $('qc').addEventListener('keydown', e => { if (e.key === 'Escape') { qcToggle(false); $('qcOpen').focus(); } });
+  $('qcExpr').addEventListener('input', e => { qc.expr = e.target.value; qcSave(); renderQc(); });
+  $('qcExpr').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); qcRemember(); } });
+  document.querySelectorAll('input[name="qcSs"]').forEach(r => r.addEventListener('change', e => { qc.ss = +e.target.value; qcSave(); renderQc(); }));
+  document.querySelector('.qc-keys').addEventListener('click', e => {
+    const b = e.target.closest('button[data-k]'); if (!b) return;
+    const inp = $('qcExpr'), k = b.dataset.k;
+    const st = inp.selectionStart ?? inp.value.length, en = inp.selectionEnd ?? inp.value.length;
+    const ins = /^[a-z]+$/.test(k) ? k : ` ${k} `;
+    inp.value = inp.value.slice(0, st) + ins + inp.value.slice(en);
+    const pos = st + ins.length;
+    inp.focus(); try { inp.setSelectionRange(pos, pos); } catch (err) {}
+    qc.expr = inp.value; qcSave(); renderQc();
+  });
+  $('qcHist').addEventListener('mousedown', e => { if (e.target.closest('[data-h]')) e.preventDefault(); });
+  $('qcHist').addEventListener('click', e => {
+    const b = e.target.closest('[data-h]'); if (!b) return;
+    qc.expr = qc.hist[+b.dataset.h] || ''; $('qcExpr').value = qc.expr; qcSave(); renderQc(); $('qcExpr').focus();
+  });
+  $('qcAdd').addEventListener('click', () => {
+    const r = qcCompute(); if (r.err || r.empty || isReadOnly()) return;
+    const name = $('qcName').value.trim() || 'Sin nombre';
+    // La lista entiende sumas y atajos; con restas, divisiones o paréntesis se guarda el número final
+    const plainExpr = /^[\d\s.,+*x×]*(?:(?:sb|st|dc|s)\b[\d\s.,+*x×]*)*$/i.test(qc.expr) && parseQty(qc.expr, qc.ss).v === r.n;
+    touched();
+    const row = mk(name, plainExpr ? qc.expr.trim() : String(r.n));
+    if (detectSS(name) !== qc.ss) row.ss = qc.ss;
+    const blank = state.rows.findIndex(x => !x.name.trim() && !x.qty.trim());
+    if (blank >= 0) state.rows.splice(blank, 1, row); else state.rows.push(row);
+    if (state.order === 'desc') sortRows();
+    renderRows(); renderResults(); save();
+    qcRemember();
+    $('qcName').value = '';
+    showUndo(`Se agregó ${name} a la lista`, state.rows.filter(x => x !== row).map(x => ({ ...x })));
+  });
+
+  document.querySelectorAll('input[name="resView"]').forEach(r => r.addEventListener('change', e => { state.resView = e.target.value; renderResults(); save(); }));
+  $(state.resView === 'craft' ? 'rvCraft' : 'rvList').checked = true;
+  $('woodSel').addEventListener('change', e => { state.wood = e.target.value; save(); renderResults(); });
+  $('cvSteps').addEventListener('click', openForAll);
+  $('cvBody').addEventListener('click', e => {
+    const b = e.target.closest('[data-newrecipe]'); if (!b) return;
+    const id = b.dataset.newrecipe;
+    openOne(id, iname(id), +b.dataset.qty || 1, null, null);
+  });
+  $('cvBody').addEventListener('change', e => {
+    const t = e.target; if (!t.dataset.gather) return;
+    const g = { ...state.gathered };
+    if (t.checked) g[t.dataset.gather] = true; else delete g[t.dataset.gather];
+    state.gathered = g; save(); renderResults();
+    const again = $('cvBody').querySelector(`[data-gather="${CSS.escape(t.dataset.gather)}"]`); if (again) again.focus();
+  });
+
+  // ================= Portada =================
+  const BOX_MARK = `<svg viewBox="0 0 24 24" aria-hidden="true">${cubeSVG('#9a6aa8', 1)}<path d="M2.5 11.6L12 16.6L21.5 11.6" stroke="rgba(0,0,0,.5)" stroke-width="1.1" fill="none"/><polygon points="6,15.4 8.4,16.6 8.4,18.6 6,17.4" fill="#f2b84b"/></svg>`;
+  $('brandMark').innerHTML = BOX_MARK;
+  $('footMark').innerHTML = BOX_MARK;
+  (function heroArt(){
+    // Pequeña construcción isométrica: cada bloque se dibuja de atrás hacia adelante
+    const blocks = [
+      [0, 0, 0, '#919191', 1], [1, 0, 0, '#bb8d58', 'planks'], [0, 1, 0, '#808080', 1], [1, 1, 0, '#c3e5f2', 'glass'],
+      [0, 0, 1, '#919191', 1], [1, 0, 1, '#f0c54a', 1], [0, 1, 1, '#808080', 1], [0, 0, 2, '#ece6dc', 1]
+    ].sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]) || a[2] - b[2]);
+    const at = (gx, gy, gz) => [40 + (gx - gy) * 9.5, 30 + (gx + gy) * 5 - gz * 9.5];
+    let g = '';
+    for (const [x, y, z, c, kind] of blocks) {
+      const [tx, ty] = at(x, y, z);
+      g += `<g transform="translate(${tx} ${ty})">${kind === 'planks' ? shapeSVG('planks', c) : kind === 'glass' ? shapeSVG('glass', c) : cubeSVG(c, 1)}</g>`;
+    }
+    const box = `<g class="float"><g transform="translate(70 40) scale(1.45)">${cubeSVG('#9a6aa8', 1)}<path d="M2.5 11.6L12 16.6L21.5 11.6" stroke="rgba(0,0,0,.5)" stroke-width=".9" fill="none"/><polygon points="6,15.4 8.4,16.6 8.4,18.6 6,17.4" fill="#f2b84b"/></g></g>`;
+    const tag = `<g transform="translate(16 18)"><rect width="26" height="13" rx="1" fill="#f2b84b"/><text x="13" y="10" text-anchor="middle" font-family="Pixelify Sans, monospace" font-size="10" font-weight="700" fill="#241a06">×64</text></g>`;
+    $('heroArt').innerHTML = `<svg viewBox="8 6 100 82">${g}${box}${tag}</svg>`;
+  })();
+  (function stars(){
+    let seed = 1749;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    const cols = ['#c69be3', '#f2b84b', '#ffffff'];
+    let r = '';
+    for (let i = 0; i < 46; i++) {
+      const sz = rnd() < .2 ? 3 : 2;
+      r += `<rect x="${(rnd() * 400).toFixed(1)}" y="${(rnd() * 180).toFixed(1)}" width="${sz}" height="${sz}" fill="${cols[Math.floor(rnd() * 3)]}" opacity="${(.15 + rnd() * .45).toFixed(2)}"/>`;
+    }
+    const sv = $('heroStars');
+    sv.setAttribute('viewBox', '0 0 400 180');
+    sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+    sv.innerHTML = r;
+  })();
+  $('heroStart').addEventListener('click', () => {
+    const sec = $('h-mat').closest('section');
+    const smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    sec.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    const r = state.rows.find(x => !x.name.trim()) || state.rows[0];
+    if (r && $('name-' + r.id)) setTimeout(() => $('name-' + r.id).focus({ preventScroll: true }), smooth ? 350 : 0);
+  });
+
+  // Guía de inicio: los ejemplos llenan la primera fila vacía
+  document.querySelectorAll('#starter .chip').forEach(c => { c.insertAdjacentHTML('afterbegin', iconFor(c.dataset.n)); });
+  $('starter').addEventListener('click', e => {
+    const c = e.target.closest('.chip'); if (!c) return;
+    touched();
+    let r = state.rows.find(x => !x.name.trim() && !x.qty.trim());
+    if (!r) { r = mk(); state.rows.push(r); }
+    r.name = c.dataset.n; r.qty = c.dataset.q;
+    state.rows.push(mk());
+    if (state.order === 'desc') sortRows();
+    renderRows(); renderResults(); save();
+  });
+  // Soltar un .litematic sobre el panel de materiales
+  const matPanel = $('h-mat').closest('section');
+  const hasFiles = e => e.dataTransfer && [...(e.dataTransfer.types || [])].includes('Files');
+  matPanel.addEventListener('dragover', e => { if (!hasFiles(e) || isReadOnly()) return; e.preventDefault(); matPanel.classList.add('dropping'); });
+  matPanel.addEventListener('dragleave', e => { if (!matPanel.contains(e.relatedTarget)) matPanel.classList.remove('dropping'); });
+  matPanel.addEventListener('drop', e => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    matPanel.classList.remove('dropping');
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!f) return;
+    const p = $('pastePanel');
+    if (p.hidden) { p.hidden = false; $('togglePaste').setAttribute('aria-expanded', 'true'); }
+    if (/\.litematic$/i.test(f.name)) importLitematic(f);
+    else $('pasteStatus').textContent = 'Ese archivo no es un .litematic. Para listas de texto, pégalas en el cuadro de arriba.';
+  });
+
+  // Eventos
+  rowsEl.addEventListener('input', e => {
+    const el = e.target.closest('.row'); if (!el) return;
+    const r = findRow(el); if (!r) return;
+    if (e.target.classList.contains('name')) r.name = e.target.value;
+    else if (e.target.classList.contains('qty')) r.qty = e.target.value;
+    else if (e.target.classList.contains('have')) r.have = e.target.value;
+    else return;
+    touched(); refreshRow(el, r); renderResults(); save();
+    $('starter').hidden = !state.rows.every(x => !x.name.trim() && !x.qty.trim());
+  });
+  // El reordenamiento automático ocurre al confirmar el campo (change), no mientras se escribe
+  rowsEl.addEventListener('change', e => {
+    const el = e.target.closest('.row'); if (!el) return;
+    const r = findRow(el); if (!r) return;
+    if (e.target.classList.contains('done-check')) {
+      if (e.target.checked) r.done = true; else delete r.done;
+      touched(); placeDone();
+      renderRows(); renderResults(); save();
+      const again = $('done-' + r.id); if (again) again.focus();
+      return;
+    }
+    if (e.target.classList.contains('ss')) {
+      r.ss = cleanSS(e.target.value);
+      touched(); refreshRow(el, r);
+    } else if (!e.target.matches('.qty, .name')) return;
+    resortIfNeeded(); renderResults(); save();
+  });
+  rowsEl.addEventListener('click', e => {
+    if (e.target.id === 'undoneAll') {
+      const prev = snapshot();
+      state.rows.forEach(r => { delete r.done; });
+      placeDone(); renderRows(); renderResults(); save();
+      showUndo('Se desmarcaron los materiales listos', prev);
+      return;
+    }
+    const cb = e.target.closest('.craft');
+    if (cb) { const r = findRow(cb.closest('.row')); if (r) openForRow(r); return; }
+    const btn = e.target.closest('.del'); if (!btn) return;
+    const r = findRow(btn.closest('.row'));
+    const idx = state.rows.indexOf(r);
+    const prev = snapshot();
+    touched();
+    state.rows = state.rows.filter(x => x !== r);
+    if (!state.rows.length) state.rows.push(mk());
+    renderRows(); renderResults(); save();
+    const next = state.rows[Math.min(idx, state.rows.length - 1)];
+    if (next) $('name-' + next.id).focus();
+    showUndo(`Se quitó ${r.name.trim() || 'la fila'}`, prev);
+  });
+  rowsEl.addEventListener('keydown', e => {
+    // Mover con flechas desde la manilla
+    if (e.target.classList.contains('handle') && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      e.preventDefault();
+      const r = findRow(e.target.closest('.row'));
+      const i = state.rows.indexOf(r);
+      const j = e.key === 'ArrowUp' ? i - 1 : i + 1;
+      if (j < 0 || j >= state.rows.length) return;
+      state.rows.splice(i, 1); state.rows.splice(j, 0, r);
+      touched(); setOrder('manual'); partitionDone();
+      renderRows(); renderResults(); save();
+      $('h-' + r.id).focus();
+      return;
+    }
+    if (e.key !== 'Enter' || !e.target.matches('.qty, .name, .have')) return;
+    e.preventDefault();
+    const el = e.target.closest('.row');
+    if (e.target.classList.contains('name')) { el.querySelector('.qty').focus(); return; }
+    if (e.target.classList.contains('qty')) { el.querySelector('.have').focus(); return; }
+    if (state.order === 'desc') {
+      // En orden automático la fila se reubica; seguimos en una fila vacía al final
+      e.target.blur();
+      const last = state.rows[state.rows.length - 1];
+      if (last && !last.name.trim() && !last.qty.trim()) $('name-' + last.id).focus(); else addRow();
+      return;
+    }
+    let next = el.nextElementSibling;
+    while (next && !next.classList.contains('row')) next = next.nextElementSibling;
+    if (next) next.querySelector('.name').focus(); else addRow();
+  });
+
+  // Arrastrar con puntero (mouse o dedo). Se mueven los vecinos, nunca la fila arrastrada,
+  // para no perder la captura del puntero.
+  let drag = null;
+  rowsEl.addEventListener('pointerdown', e => {
+    const h = e.target.closest('.handle'); if (!h || e.button > 0) return;
+    e.preventDefault();
+    const el = h.closest('.row');
+    drag = { el, h, id: e.pointerId, before: [...rowsEl.children].map(x => x.dataset.id).join() };
+    try { h.setPointerCapture(e.pointerId); } catch (err) {}
+    el.classList.add('dragging');
+  });
+  rowsEl.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const y = e.clientY, el = drag.el;
+    let prev = el.previousElementSibling;
+    while (prev) {
+      const b = prev.getBoundingClientRect();
+      if (y < b.top + b.height / 2) { rowsEl.insertBefore(prev, el.nextSibling); prev = el.previousElementSibling; }
+      else break;
+    }
+    let next = el.nextElementSibling;
+    while (next) {
+      const b = next.getBoundingClientRect();
+      if (y > b.top + b.height / 2) { rowsEl.insertBefore(next, el); next = el.nextElementSibling; }
+      else break;
+    }
+  });
+  function endDrag(e){
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    const { el, before } = drag;
+    drag = null;
+    el.classList.remove('dragging');
+    const ids = [...rowsEl.children].map(x => x.dataset.id);
+    if (ids.join() === before) return;
+    const byId = new Map(state.rows.map(r => [String(r.id), r]));
+    state.rows = ids.map(id => byId.get(id)).filter(Boolean);
+    touched(); setOrder('manual'); partitionDone();
+    renderRows(); renderResults(); save();
+  }
+  rowsEl.addEventListener('pointerup', endDrag);
+  rowsEl.addEventListener('pointercancel', endDrag);
+  rowsEl.addEventListener('lostpointercapture', endDrag);
+
+  document.querySelectorAll('input[name="order"]').forEach(r => r.addEventListener('change', e => {
+    state.order = e.target.value;
+    if (state.order === 'desc' && sortRows()) { renderRows(); renderResults(); }
+    save();
+  }));
+
+  $('addRow').addEventListener('click', addRow);
+  $('togglePaste').addEventListener('click', () => {
+    const p = $('pastePanel'); p.hidden = !p.hidden;
+    $('togglePaste').setAttribute('aria-expanded', String(!p.hidden));
+    if (!p.hidden) $('pasteText').focus();
+  });
+  $('pasteAppend').addEventListener('click', () => applyPaste(false));
+  $('pasteReplace').addEventListener('click', () => applyPaste(true));
+  $('litCol').addEventListener('change', e => { state.litCol = e.target.value; save(); });
+
+  $('clearAll').addEventListener('click', () => {
+    const prev = snapshot();
+    touched();
+    state.rows = [mk()];
+    renderRows(); renderResults(); save();
+    $('name-' + state.rows[0].id).focus();
+    showUndo('Lista vaciada', prev);
+  });
+
+  $('mult').addEventListener('input', e => {
+    const v = parseInt(e.target.value, 10);
+    if (v >= 1) { state.mult = Math.min(v, 100000); renderResults(); save(); }
+  });
+  $('mult').addEventListener('blur', e => { e.target.value = state.mult; });
+  document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener('change', e => {
+    state.mode = e.target.value; renderResults(); save();
+  }));
+  $('showSb').addEventListener('change', e => { state.showSb = e.target.checked; renderResults(); save(); });
+  $('subtract').addEventListener('change', e => { state.subtract = e.target.checked; renderRows(); renderResults(); save(); });
+
+  $('copyBtn').addEventListener('click', () => {
+    const text = state.resView === 'craft' ? craftText() : summaryText();
+    const btn = $('copyBtn');
+    const fallback = () => {
+      $('copyFallback').hidden = false;
+      const ta = $('copyText'); ta.value = text; ta.focus(); ta.select();
+    };
+    try {
+      navigator.clipboard.writeText(text).then(() => {
+        $('copyFallback').hidden = true;
+        btn.textContent = 'Copiado';
+        setTimeout(() => { btn.textContent = state.resView === 'craft' ? 'Copiar materiales' : 'Copiar resumen'; }, 1800);
+      }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  // Estado inicial
+  $('mult').value = state.mult;
+  $(state.mode === 'mixed' ? 'modeMixed' : 'modeSep').checked = true;
+  $('showSb').checked = state.showSb;
+  $('subtract').checked = state.subtract;
+  $('litCol').value = state.litCol;
+  setOrder(state.order);
+  if (state.order === 'desc') sortRows();
+  renderListBar();
+  renderRows();
+  renderResults();
+  save();
+})();
+</script>
+
+</body>
+</html>
